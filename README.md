@@ -4,7 +4,7 @@
 
 # Objetivo do projeto:
 
-# Bando de dados utilizado?
+# Banco de dados utilizado:
 
 - https://mtgjson.com/
 
