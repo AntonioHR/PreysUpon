@@ -6,11 +6,12 @@
 
 # Banco de dados utilizado:
 
-- https://mtgjson.com/
+- [dados](https://mtgjson.com)
 
 # Demonstração:
-// Demos do projeto aqui, não se se gifs ou links do youtube seriam viáveis
+
+* [Demo](www.google.com.br)
 
 # Apresentações dos trabalhos:
 
-// Links dos slides aqui
+* [Slide 1](https://docs.google.com/presentation/d/1ACfgtsNTGGxi0Z9UDIBLR_borld4uOwsBg-xMeepiqs/edit?usp=sharing)
