@@ -6,7 +6,7 @@
 
 # Banco de dados utilizado:
 
-- [dados](https://mtgjson.com)
+- [Dados](https://mtgjson.com/json/AllCards-x.json.zip)
 
 # Demonstração:
 
