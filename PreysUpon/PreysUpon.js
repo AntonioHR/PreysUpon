@@ -7,9 +7,8 @@ var init = function () {
     svgContainer = d3.select("body").append("svg").attr("width", width).attr("height", height);
 
     setGlobalVariables();
-    getCreatureCards();
+    this.creatureCards = ParseCreaturesFromAllCards(cardsMTG);
     buildColorArrays();
-    populateCreatureComboBox();
 
 
     histoWidth = 300;
@@ -21,8 +20,10 @@ var init = function () {
     //buildIt(histogramPosData.g, histogramPosData.width, histogramPosData.height);
 
     this.mainHisto = buildHisto(parent, histoWidth, histoHeight, this.allColors, this.creatureCards.length);
-    this.currentCreaturePool = filterByEdition(this.creatureCards, ["SOM"]);
+    //this.currentCreaturePool = filterByEdition(this.creatureCards, ["SOM"]);
+    currentCreaturePool = this.creatureCards.getAllInEdition(["SOM"]);
 
+    populateCreatureComboBox(currentCreaturePool);
     barWidth = getBarWidth(this.mainHisto);
 
     x = stackBar(this.mainHisto.origin, barWidth, 100, "red");
@@ -42,12 +43,13 @@ function onSelectedCardChange() {
 }
 
 //Initialization Functions
-function populateCreatureComboBox() {
-    this.CreatureSelector = document.getElementById("select");
+function populateCreatureComboBox(cardQuery) {
+    var creatureSelector = document.getElementById("select");
 
     //Pegando os nomes para ordenar
     var names = [];
-    this.creatureCards.forEach(function (card) {
+    var creatureCards = cardQuery.cards;
+    creatureCards.forEach(function (card) {
         names.push(card.name);
     });
 
@@ -56,28 +58,17 @@ function populateCreatureComboBox() {
     names.forEach(function (name) {
         option = document.createElement("option");
         option.text = name;
-        this.CreatureSelector.add(option);
+        creatureSelector.add(option);
     });
 
-    this.CreatureSelector.selectedIndex = -1;
+    creatureSelector.selectedIndex = -1;
+    return creatureSelector;
 }
 
 function setGlobalVariables() {
     this.creatureCards = [];
 }
 
-function getCreatureCards() {
-    for (var key in cardsMTG) {
-        var card = cardsMTG[key];
-        if (!card.types) continue;
-
-        if (card.types.indexOf("Creature") > -1) {
-            this.creatureCards.push(card);
-        }
-    }
-
-    this.dataSize = this.creatureCards.length;
-}
 
 function buildColorArrays() {
     this.allColors = ["Blue", "White", "Green", "Black", "Red"];
@@ -212,81 +203,3 @@ function stackBar(parent, width, height, fill)
     };
 }
 
-
-//Helper filter functions
-function SplitUpSelectionByColor(cards)
-{
-    result =
-        {
-            Colorless: filterColorless(cards),
-            MultiColored: filterMultiColoredAll(cards)
-        };
-    for (var c in this.allColors)
-    {
-        result[allColors[c]] = filterColorMono(cards, this.allColors[c]);
-    }
-    return result;
-}
-
-function filterColorMono(creatures, color)
-{
-    return creatures.filter(function (card) {
-        return !hasNoColors(card) && card.colors.length == 1 && card.colors.indexOf(color) != -1;
-    });
-}
-function filterMultiColoredAll(creatures) {
-    return creatures.filter(function (card) {
-        return !hasNoColors(card) && card.colors.length > 1;
-    });
-}
-function filterColorless(creatures) {
-    return creatures.filter(hasNoColors);
-}
-function hasNoColors(card)
-{
-    return card.colors === undefined;
-}
-
-function filterPrey(creatures, power)
-{
-    return creatures.filter(function(card)
-    {
-        return card.toughness <= power;
-    });
-}
-function filterPredators(creatures, toughness) {
-    return creatures.filter(function (card) {
-        return card.power >= toughness;
-    });
-}
-function filterNoDeaths(creatures, power, toughness) {
-    return creatures.filter(function (card) {
-        return card.power < toughness && card.toughness > power;
-    });
-}
-
-function getByName(creatures, name) {
-    return creatures.find(function (card) {
-        return card.name == name;
-    });
-}
-
-function filterByEdition(creatures, editions)
-{
-    return creatures.filter(function (card) {
-        return anyMatches(card.printings, editions);
-    });
-}
-
-function anyMatches(array1, array2)
-{
-    for (var a in array1) {
-        if (array2.indexOf(array1[a]) != -1)
-            return true;
-    }
-    return false;
-}
-
-function onlyUniqueFilter(value, index, self) {
-    return self.indexOf(value) === index;
-}
