@@ -29,13 +29,17 @@
 				position: absolute;
 				width: 200px;
 			}
+            .tick text {
+                fill: black;
+                font: 10px sans-serif;
+            }
 	
 		</style>
 
 	</head>
 
 	<body onload="init()">
-		<select id="select" onchange="changeHistogram()">
+		<select id="select" onchange="onSelectedCardChange()">
 		   
 		</select>
 	</body>

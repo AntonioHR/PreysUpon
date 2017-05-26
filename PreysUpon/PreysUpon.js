@@ -1,264 +1,292 @@
-var init = function() {
-	this.margin = {top: 25, right: 25, bottom: 25, left: 25};
+var init = function () {
+    margin = { top: 25, right: 25, bottom: 25, left: 25 };
 
-	var width = 1024 - this.margin.left - this.margin.right;
-	var height = 600 - this.margin.top - this.margin.bottom;
+    var width = 1024 - this.margin.left - this.margin.right;
+    var height = 600 - this.margin.top - this.margin.bottom;
 
-	this.svgContainer = d3.select("body").append("svg").attr("width", width).attr("height", height);
+    svgContainer = d3.select("body").append("svg").attr("width", width).attr("height", height);
 
-	//Definindo as escalas, baseando os domínios ao contradomínio (dimensão aceita do svg)
-	/*this.scaleX = d3.scaleLinear().domain([0, 100]).range([margin.left, width - margin.right]);
-	this.scaleY = d3.scaleLinear().domain([0, 100]).range([height -  margin.top, margin.bottom]);
-	this.scaleR = d3.scaleLinear().domain([0, 100]).range([5, 25]);
-	this.scaleColor = d3.scaleLinear().domain([0, 100]).range([0.0, 1.0]);	
+    setGlobalVariables();
+    getCreatureCards();
+    buildColorArrays();
+    populateCreatureComboBox();
 
-	this.svgGroup = this.svgContainer.append("g")
 
-	//Criando o eixo-x
-	this.svgGroup.append("g")	    
-	    .attr("transform", "translate(0," + (height - margin.bottom) + ")")
-	    .call(d3.axisBottom(this.scaleX));
+    histoWidth = 300;
+    histoHeight = 200;
 
-	//Criando o eixo-y
-	this.svgGroup.append("g")
-	    .attr("transform", "translate(" + margin.left + ",0)")
-	    .call(d3.axisLeft(this.scaleY));
-	
-	this.groupPoints = this.svgContainer.append("g");	*/
+    parent = addPositionedContainer(svgContainer, 100, 100);
 
-	setGlobalVariables();
-	getCreatureCards();
+    histogramPosData = applyMargin(parent, margin, histoWidth, histoHeight);
+    //buildIt(histogramPosData.g, histogramPosData.width, histogramPosData.height);
 
-	this.histogramGroup = this.svgContainer.append("g");
+    this.mainHisto = buildHisto(parent, histoWidth, histoHeight, this.allColors, this.creatureCards.length);
+    this.currentCreaturePool = filterByEdition(this.creatureCards, ["SOM"]);
 
-	//Definir o checklist dos monstros
-	definingSelect();
-	
-	buildingHistogram(500, height);	
-		
+    barWidth = getBarWidth(this.mainHisto);
+
+    x = stackBar(this.mainHisto.origin, barWidth, 100, "red");
+    stackBar(x.g, barWidth, 100, "green");
+    this.mainHisto.parent.selectAll("text").text("Hey");
 };
 
-function changeHistogram() {	
-	var currentName = this.selectComponent.options[this.selectComponent.selectedIndex].text;
+//Callbacks for the HTML page
+function onSelectedCardChange() {
+    var currentName = this.CreatureSelector.options[this.CreatureSelector.selectedIndex].text;
 
-	//Pega o primeiro card da listagem com aquele nome
-	this.selectedCard = this.cardsCreatures.find(function (d) { return d.name == currentName});
+    //Pega o primeiro card da listagem com aquele nome
+    this.selectedCard = this.creatureCards.find(function (d) { return d.name == currentName; });
 
-	console.log(this.selectedCard);	
-	pupulateBars();
-};
+    console.log(this.selectedCard);
+    populateBars();
+}
 
-function definingSelect() {
-	this.selectComponent = document.getElementById("select");
+//Initialization Functions
+function populateCreatureComboBox() {
+    this.CreatureSelector = document.getElementById("select");
 
-	//Pegando os nomes para ordenar
-	var names = [];
-	this.cardsCreatures.forEach(function(card) {
-		names.push(card.name);
-	});
+    //Pegando os nomes para ordenar
+    var names = [];
+    this.creatureCards.forEach(function (card) {
+        names.push(card.name);
+    });
 
-	names.sort();
-	var option = document.createElement("option");
-	names.forEach(function (name) {
-		option = document.createElement("option");
-		option.text = name;	    
-	    this.selectComponent.add(option);
-	})
-	
-	this.selectComponent.selectedIndex = - 1;
-};
+    names.sort();
+    var option = document.createElement("option");
+    names.forEach(function (name) {
+        option = document.createElement("option");
+        option.text = name;
+        this.CreatureSelector.add(option);
+    });
+
+    this.CreatureSelector.selectedIndex = -1;
+}
 
 function setGlobalVariables() {
-	this.cardsCreatures = [];
+    this.creatureCards = [];
 }
 
 function getCreatureCards() {
-	for (key in cardsMTG) {
-		var card = cardsMTG[key];
-		if(!card.types) continue;
-		
-		if(card["types"].indexOf("Creature") > -1){
-			this.cardsCreatures.push(card);	
-		}	
-	}
+    for (var key in cardsMTG) {
+        var card = cardsMTG[key];
+        if (!card.types) continue;
 
-	this.dataSize = this.cardsCreatures.length;
+        if (card.types.indexOf("Creature") > -1) {
+            this.creatureCards.push(card);
+        }
+    }
 
-	this.allColors = ["Blue", "White", "Green", "Black", "Red"];
-	this.allColorIdentity = ["U", "W", "G", "B", "R"];
+    this.dataSize = this.creatureCards.length;
+}
 
-	/*this.cardsCreatures.forEach(function(card){
-		if(card.colorIdentity){
-			card.colorIdentity.forEach(function(color) {
-				if(this.allColorIdentity.indexOf(color) == -1) this.allColorIdentity.push(color);
-			});	
-		}	
-		if(card.colors){
-			card.colors.forEach(function(color) {
-				if(this.allColors.indexOf(color) == -1) this.allColors.push(color);
-			});	
-		}			
-	});	*/	
-};
-
-//Testar!!
-function buildingHistogram(width, height) {
-
-	this.histogramWidth = width;
-	this.histogramHeight = height;
-	this.histogramOffsetX = this.histogramWidth * 0.35;	
-
-	this.scaleHistogramX = d3.scaleLinear()
-		.domain([0, this.allColors.length])
-        .range([this.margin.left +  this.margin.right / 2 + this.margin.right, this.histogramWidth +  this.margin.right / 2 - this.margin.right]);
-
-    this.bins = d3.histogram()
-    	.domain(this.scaleHistogramX.domain())    	    	
-    	(this.allColors);
-
-	this.scaleHistogramY = d3.scaleLinear().domain([0, this.dataSize/2]).range([this.histogramHeight - this.margin.top, this.margin.bottom]);	
-
-	this.histogramGroup = this.svgContainer.append("g");
-	//Criando o eixo-x
-	this.histogramGroup.append("g")	    
-	    .attr("transform", "translate("+ this.histogramOffsetX +"," + (this.histogramHeight - this.margin.bottom) + ")")
-	    .call(d3.axisBottom(this.scaleHistogramX).tickPadding(20).ticks(4));
-
-	//Criando o eixo-y
-	this.histogramGroup.append("g")
-	    .attr("transform", "translate(" + ( this.histogramOffsetX + this.margin.left + this.margin.right) + ",0)")
-	    .call(d3.axisLeft(this.scaleHistogramY).tickPadding(10));		
+function buildColorArrays() {
+    this.allColors = ["Blue", "White", "Green", "Black", "Red"];
+    this.allColorIdentity = ["U", "W", "G", "B", "R"];
+}
 
 
-	//pupulateBars();	
-};
 
-function pupulateBars() {
-	this.histogramGroup.selectAll(".bar").remove();
-	
-	//Populando barras
-	this.bar = this.histogramGroup.selectAll(".bar")
-		.data(this.bins)
-		.enter().append("g")
-	    .attr("class", "bar");	    
+//Helper Functions for positioning Stuff
+function addPositionedScaledContainer(parent, x, y, scaleX, scaleY) {
+    result = parent.append("g");
+    result.attr("transform", "translate(" + x + "," + y + ")");
+    result = result.append("g");
+    result.attr("transform", "scale(" + x + "," + y + ")");
+    return result;
+}
+function addPositionedContainer(parent, x, y) {
+    result = parent.append("g");
+    result.attr("transform", "translate(" + x + "," + y + ")");
+    return result;
+}
 
-	preyBars(false);
+function applyMargin(parent, margin, width, height) {
+    child = addPositionedContainer(parent, margin.left, margin.top);
+    childWidth = width - (margin.left + margin.right);
+    childHeight = height - (margin.top + margin.bottom);
 
-	predatorsBars(true);
+    result =
+        {
+            g: child,
+            width: childWidth,
+            height: childHeight
+        };
+    return result;
+}
+function margins(top, right, bottom, left)
+{
+    return { top: top, right: right, bottom: bottom, left: left };
+}
 
-	//Adicionando nome das cores
-	this.bar.append("text")
-	    .attr("dy", ".75em")
-	    .attr("y", function (d, i) {
-	    	return this.scaleHistogramY(-10) + 10;
-	    }.bind(this))
-	    .attr("x", function (d, i) {	    	
-	    	return this.histogramOffsetX + this.scaleHistogramX(this.bins[i].x0) + (this.scaleHistogramX(this.bins[i].x1) - this.scaleHistogramX(this.bins[i].x0)) / 2;
-	    }.bind(this))	    	
-	    .attr("text-anchor", "middle")
-	    .text(function(d, i) { 
-	    	return this.allColors[i]; 
-	    }.bind(this));
-};
+function getBarWidth(histo)
+{
+    return histo.scaleX(1);
+}
+function buildHisto(parent, width, height, horizontalOptions, verticalCount)
+{
 
-function preyBars(isPredator) {
-	this.bar.append("rect")
-	    .attr("x", function (d) {
-	    	return this.histogramOffsetX + this.scaleHistogramX(d.x0);
-	    }.bind(this))
-	    .attr("y", function (d,i) {	    	    	
-			return this.scaleHistogramY(filterCardPreyPredator(i, false).length);
-	    }.bind(this))
-	    .attr("width", this.scaleHistogramX(this.bins[0].x1) - this.scaleHistogramX(this.bins[0].x0) - 1)
-	    .attr("height", function(d, i) {     			    	
-		    return Math.floor(this.histogramHeight - this.margin.top - this.scaleHistogramY(filterCardPreyPredator(i, false).length)); 
-	    }.bind(this))
-	    .on("click", function(d, i) {	    	
-	    	console.log("preyBars Click");
-		})
-		.on("mouseover", function(d, i) {	    	
-	    	console.log("preyBars Hover");
-		})
-		.style("fill", "red");		
+    parent.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("style", "fill:rgb(0,0,255)");
 
-	//Adicionando número de cartas
-	this.bar.append("text")
-	    .attr("dy", ".75em")
-	    .attr("y", function (d, i) {
-	    	return this.scaleHistogramY(filterCardPreyPredator(i, false).length) + 10;
-	    }.bind(this))
-	    .attr("x", function (d, i) {	    	
-	    	return this.histogramOffsetX + this.scaleHistogramX(this.bins[i].x0) + (this.scaleHistogramX(this.bins[i].x1) - this.scaleHistogramX(this.bins[i].x0)) / 2;
-	    }.bind(this))	    	
-	    .attr("text-anchor", "middle")
-	    .text(function(d, i) { 
-	    	return filterCardPreyPredator(i, false).length.toString(); 
-	    }.bind(this));
-};
 
-function predatorsBars(isPredator) {
-	this.bar.append("rect")
-	    .attr("x", function (d) {
-	    	return this.histogramOffsetX + this.scaleHistogramX(d.x0);
-	    }.bind(this))
-	    .attr("y", function (d,i) {	    	    	
-			return this.scaleHistogramY(filterCardPreyPredator(i, true).length + filterCardPreyPredator(i, false).length);
-	    }.bind(this))
-	    .attr("width", this.scaleHistogramX(this.bins[0].x1) - this.scaleHistogramX(this.bins[0].x0) - 1)
-	    .attr("height", function(d, i) {     			    	
-		    return Math.floor(this.histogramHeight - this.margin.top - this.scaleHistogramY(filterCardPreyPredator(i, true).length)); 
-	    }.bind(this))
-	    .on("click", function(d, i) {	    	
-	    	console.log("predatorsBars Click");
-		})
-		.on("mouseover", function(d, i) {	    	
-	    	console.log("predatorsBars Hover");
-		})
-		.style("fill", "green");		
+    axisBarsOffset = 5;
+    extraBarOffset = 5;
 
-	//Adicionando número de cartas
-	this.bar.append("text")
-	    .attr("dy", ".75em")
-	    .attr("y", function (d, i) {
-	    	return this.scaleHistogramY(filterCardPreyPredator(i, true).length + filterCardPreyPredator(i, false).length) - 40;
-	    }.bind(this))
-	    .attr("x", function (d, i) {	    	
-	    	return this.histogramOffsetX + this.scaleHistogramX(this.bins[i].x0) + (this.scaleHistogramX(this.bins[i].x1) - this.scaleHistogramX(this.bins[i].x0)) / 2;
-	    }.bind(this))	    	
-	    .attr("text-anchor", "middle")
-	    .text(function(d, i) { 
-	    	return filterCardPreyPredator(i, true).length.toString(); 
-	    }.bind(this));
-};
+    //Calculate Space for X Axis
+    tickPaddingX = 10;
+    tickInnerSizeX = 4;
+    textHeightX = 10;
+    tickOuterSizeX = 0;
+    totalOffsetXAxis = tickPaddingX + tickInnerSizeX + textHeightX + tickOuterSizeX;
 
-function filterCardPreyPredator(index, isPredator) {
-	var content = this.cardsCreatures.filter(function (d) { 
-		var sameColor = false;
-		if(d.colorIdentity){
-			sameColor = d.colorIdentity.indexOf(this.allColorIdentity[index]) > -1;	
-		}else if(d.colors){
-			sameColor = d.colors.indexOf(this.allColors[index]) > -1;
-		}	
+    //Calculate Space for Y Axis
+    tickPaddingY = 0;
+    tickInnerSizeY = 4;
+    textWidthY = 20;
+    tickOuterSizeY = 0;
+    totalOffsetYAxis = tickPaddingY + tickInnerSizeY + textWidthY + tickOuterSizeY;
 
-		if(isPredator){
-			return sameColor && d.toughness <= this.selectedCard.power;
-		}else{
-			return sameColor && d.power >= this.selectedCard.toughness;
-		}
+    //Make the margin
 
-	}.bind(this));	
-	return content;	
-};
+    posDataAxis = applyMargin(parent, margins(extraBarOffset, extraBarOffset, totalOffsetXAxis, totalOffsetYAxis), width, height);
 
-function filterData(index) {
-	var content = this.cardsCreatures.filter(function (d) { 
 
-		if(d.colorIdentity){
-			return d.colorIdentity.indexOf(this.allColorIdentity[index]) > -1;	
-		}else if(d.colors){
-			return d.colors.indexOf(this.allColors[index]) > -1;
-		}		 
+    posData = applyMargin(posDataAxis.g, margins(0, 0, axisBarsOffset, axisBarsOffset), posDataAxis.width, posDataAxis.height);
 
-	}.bind(this));	
-	return content;	
+    histogramGroup = posData.g;
+    axesParent = posDataAxis.g;
+
+    axisWidth = posDataAxis.width;
+    axisHeight = posDataAxis.height;
+
+    histogramWidth = posData.width;
+    histogramHeight = posData.height;
+
+    scaleHistogramX = d3.scaleLinear()
+		.domain([0, horizontalOptions.length])
+        .range([0, histogramWidth]);
+
+    bins = d3.histogram()
+    	.domain(scaleHistogramX.domain())
+    	(horizontalOptions);
+
+    scaleHistogramY = d3.scaleLinear().domain([0, verticalCount/ 2]).range([histogramHeight, 0]);
+
+
+    //Criando o eixo-x
+    var origin = addPositionedContainer(axesParent, axisBarsOffset, axisHeight);
+        origin.call(d3.axisBottom(scaleHistogramX).tickPadding(tickPaddingX).tickSizeInner(tickInnerSizeX).tickSizeOuter(tickOuterSizeX).ticks(4));
+
+        origin = addPositionedContainer(origin, 1, - 0.3);
+
+    //Criando o eixo-y
+    addPositionedContainer(axesParent, 0, axisBarsOffset)
+	    .call(d3.axisLeft(scaleHistogramY).tickPadding(tickPaddingX).tickSizeInner(tickInnerSizeX).tickSizeOuter(tickOuterSizeX))
+        .selectAll("text").remove();
+
+    result =
+        {
+            scaleX: scaleHistogramX,
+            scaleY: scaleHistogramY,
+            origin: origin,
+            g: histogramGroup,
+            parent: parent,
+            bins:bins
+        };
+
+    return result;
+}
+
+function stackBar(parent, width, height, fill)
+{
+    g =  addPositionedContainer(parent, 0, -height);
+    bar = g.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", fill);
+    return  {
+        g: g,
+        bar:bar
+    };
+}
+
+
+//Helper filter functions
+function SplitUpSelectionByColor(cards)
+{
+    result =
+        {
+            Colorless: filterColorless(cards),
+            MultiColored: filterMultiColoredAll(cards)
+        };
+    for (var c in this.allColors)
+    {
+        result[allColors[c]] = filterColorMono(cards, this.allColors[c]);
+    }
+    return result;
+}
+
+function filterColorMono(creatures, color)
+{
+    return creatures.filter(function (card) {
+        return !hasNoColors(card) && card.colors.length == 1 && card.colors.indexOf(color) != -1;
+    });
+}
+function filterMultiColoredAll(creatures) {
+    return creatures.filter(function (card) {
+        return !hasNoColors(card) && card.colors.length > 1;
+    });
+}
+function filterColorless(creatures) {
+    return creatures.filter(hasNoColors);
+}
+function hasNoColors(card)
+{
+    return card.colors === undefined;
+}
+
+function filterPrey(creatures, power)
+{
+    return creatures.filter(function(card)
+    {
+        return card.toughness <= power;
+    });
+}
+function filterPredators(creatures, toughness) {
+    return creatures.filter(function (card) {
+        return card.power >= toughness;
+    });
+}
+function filterNoDeaths(creatures, power, toughness) {
+    return creatures.filter(function (card) {
+        return card.power < toughness && card.toughness > power;
+    });
+}
+
+function getByName(creatures, name) {
+    return creatures.find(function (card) {
+        return card.name == name;
+    });
+}
+
+function filterByEdition(creatures, editions)
+{
+    return creatures.filter(function (card) {
+        return anyMatches(card.printings, editions);
+    });
+}
+
+function anyMatches(array1, array2)
+{
+    for (var a in array1) {
+        if (array2.indexOf(array1[a]) != -1)
+            return true;
+    }
+    return false;
+}
+
+function onlyUniqueFilter(value, index, self) {
+    return self.indexOf(value) === index;
 }
