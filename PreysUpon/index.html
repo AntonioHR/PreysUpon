@@ -7,6 +7,7 @@
 		<script src="https://d3js.org/d3.v4.min.js"></script>	
 		<script type="text/javascript" src="AllCards-x.json"></script>
 		<script type="text/javascript" src="CardQuery.js"></script>
+		<script type="text/javascript" src="Histo.js"></script>
 		<script type="text/javascript" src="PreysUpon.js"></script>
 
 		<style type="text/css">		
@@ -40,9 +41,11 @@
 	</head>
 
 	<body onload="init()">
-		<select id="select" onchange="onSelectedCardChange()">
-		   
-		</select>
+		<label for="powerfield" >Power</label>
+	  	<input id="powerfield" type="number" name="power"><br>
+		<label for="toughnessfield" >Tougness</label>
+	  	<input id="toughnessfield" type="number" name="tougness"><br>
+		<select id="select" onchange="onSelectedCardChange()"> </select>
 	</body>
 
 </html>

@@ -30,24 +30,24 @@ var CardQuery = (function(Cards)
 	    return card;
 	}
 	//Helper filter functions
-	function GetColourGroupSplit(cards)
+	function getColorGroupSplit()
 	{
-	    result =
+	    var result =
 	        {
-	            Colorless: filterColorless(cards),
-	            MultiColored: filterMultiColoredAll(cards)
+	            Colorless: getAllColorless(),
+	            Multicolored: getAllMulticolored()
 	        };
-	    for (var c in this.allColors)
+	    for (var c in AllColors)
 	    {
-	        result[allColors[c]] = filterColorMono(cards, this.allColors[c]);
+	        result[AllColors[c]] = getAllWithColorMono(AllColors[c]);
 	    }
 	    return result;
 	}
-	function getAllColorless(creatures) {
-	    return creatures.filter(hasNoColors);
+	function getAllColorless() {
+	    return CardQuery(Cards.filter(hasNoColors));
 	}
-	function getAllMulticolored(creatures) {
-	    var filter = creatures.filter(function (card) {
+	function getAllMulticolored() {
+	    var filter = Cards.filter(function (card) {
 	        return !hasNoColors(card) && card.colors.length > 1;
 	    });
 	    return CardQuery(filter);
@@ -59,12 +59,6 @@ var CardQuery = (function(Cards)
 	    });
 	    return CardQuery(filter);
 	}
-	function getAllNonPreyNonPredator(power, toughness) {
-	    var filter =  Cards.filter(function (card) {
-	        return card.power < toughness && card.toughness > power;
-	    });
-	    return filter;
-	}
 	function getAllInEdition(editions)
 	{
 	    var filter = Cards.filter(function (card) {
@@ -73,28 +67,45 @@ var CardQuery = (function(Cards)
 	    return CardQuery(filter);
 	}
 
-	function getAllPrey(power)
-	{
-	    var filter = Cards.filter(function(card)
-	    {
-	        return card.toughness <= power;
+	//When combat results in no deaths
+	function getAllBounceOff(power, toughness) {
+	    var filter =  Cards.filter(function (card) {
+	        return card.power < toughness && card.toughness > power;
 	    });
 	    return CardQuery(filter);
 	}
-	function getAllPredators(toughness) {
+
+	//When combat results both dying
+	function getAllTrades(power, toughness) {
+	    var filter =  Cards.filter(function (card) {
+	        return card.power >= toughness && card.toughness <= power;
+	    });
+	    return CardQuery(filter);
+	}
+	function getAllPrey(power, toughness)
+	{
+	    var filter = Cards.filter(function(card)
+	    {
+	        return card.power < toughness && card.toughness <= power;
+	    });
+	    return CardQuery(filter);
+	}
+	function getAllPredators(power, toughness) {
 	    var filter = Cards.filter(function (card) {
-	        return card.power >= toughness;
+	        return card.power >= toughness && card.toughness > power;
 	    });
 	    return CardQuery(filter);
 	}
 	return {
 		cards: Cards,
-		size: size,
+		cardCount: size,
 		getAllPredators: getAllPredators,
 		getAllPrey: getAllPrey,
-		getAllNonPreyNonPredator: getAllNonPreyNonPredator,
+		getAllBounceOff: getAllBounceOff,
+		getAllTrades: getAllTrades,
 		getAllInEdition: getAllInEdition,
-		getCardWithName: getCardWithName
+		getCardWithName: getCardWithName,
+		getColorGroupSplit: getColorGroupSplit
 	};
 });
 
