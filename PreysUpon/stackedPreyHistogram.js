@@ -6,8 +6,8 @@ function makeHisto(svg){
 	    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
 	    colorGroups = ["Blue", "White", "Green",
 			"Black", "Red", "Multicolored", "Colorless"],
-		predationGroups = ["Prey", "BounceOff", "Trade", "Predator"];
-
+		predationGroups = ["Prey", "Trade", "BounceOff", "Predator"],
+		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare", "Special"];
 
     var x = d3.scaleBand()
     	.rangeRound([0, width])
@@ -21,8 +21,17 @@ function makeHisto(svg){
 		.range(["#42f47d", "#ddff47", "#d4ffaa", "#ff7723"])
     	.domain(predationGroups);
 
-	// var x = d3.
-	
+	var colorsRarity = d3.scaleOrdinal()
+		.range(["#FFFFFF", "#7a7a7a", "#efc323", "#d33d02", "#6e04cc"])
+    	.domain(rarities);
+
+
+	var tooltipDiv = d3.select("body").append("div")
+	    .attr("class", "tooltip");
+
+	tooltipDiv.append("ul");
+	    // .style("opacity", 0);
+
 	function translate(x, y)
 	{
 	  return "translate("+x+","+y+")";
@@ -41,6 +50,13 @@ function makeHisto(svg){
 				return d[key].cardCount;
 			})(data);
 
+		for(var i in dataStacks)
+		{
+			for(var j in dataStacks[i])
+			{
+				dataStacks[i][j].key = dataStacks[i].key;
+			}
+		}
 
 		d3.selectAll("#legendParent").remove();
 		d3.selectAll("#axesParent").remove();
@@ -54,11 +70,17 @@ function makeHisto(svg){
 
 
 	  	var subElements = elements.selectAll("rect")
-	  		.data(function(d){return d;});
+	  		.data(function(d)
+	  			{
+	  				return d;
+	  			});
 			subElements.exit().remove();
 		var subNewElements = subElements.enter().append("rect")
 			.attr("y", height)
-			.attr("height", 0);
+			.attr("height", 0)
+			.on("mouseover", onMouseOver)
+	        .on("mouseout", onMouseOut);
+
 		subNewElements.merge(subElements)
 			.attr("x", function(d){return x(d.data.key);})
 			.attr("width", x.bandwidth())
@@ -105,6 +127,37 @@ function makeHisto(svg){
 	        .attr("dy", "0.32em")
 	        .text(function(d){return d;});
 	};
+
+	function onMouseOver(d) {
+	    tooltipDiv.transition()
+	        .duration(200)
+	        .style("opacity", 1)
+	        .style("left", (d3.event.pageX) + "px")
+	        .style("top", (d3.event.pageY - 28) + "px");
+
+	    var data = d.data[d.key].cards;
+	    data.sort(function(a, b)
+	    {
+	    	var indexA = rarities.indexOf(a.rarity);
+	    	var indexB = rarities.indexOf(b.rarity);
+	    	return indexB - indexA;
+	    });
+        var elements = tooltipDiv.select("ul").selectAll("li")
+        	.data(data);
+
+        elements.exit().remove();
+
+        var newElements = elements.enter().append("li");
+
+    	elements.merge(newElements)
+    		.text(function(d){return d.cmc + "-" + d.name + "(" + d.power + "/" + d.toughness + ")";})
+    		.style("color", function(d){return colorsRarity(d.rarity);});
+	}
+	function onMouseOut(d) {
+        tooltipDiv.transition()
+            .duration(500)
+            .style("opacity", 0);
+	}
 	return {
 		update:update
 	};
