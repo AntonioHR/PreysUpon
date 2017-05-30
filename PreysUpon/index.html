@@ -5,47 +5,57 @@
 	<head>
 		<title>PreysUpon</title>
 		<script src="https://d3js.org/d3.v4.min.js"></script>	
-		<script type="text/javascript" src="AllCards-x.json"></script>
+		<script type="text/javascript" src="AllSets.json"></script>
 		<script type="text/javascript" src="CardQuery.js"></script>
-		<script type="text/javascript" src="Histo.js"></script>
+		<script type="text/javascript" src="setSelectionBox.js"></script>
+		<script type="text/javascript" src="stackedPreyHistogram.js"></script>
+		<script type="text/javascript" src="PowerToughnessSelector.js"></script>
 		<script type="text/javascript" src="PreysUpon.js"></script>
 
 		<style type="text/css">		
-			svg{
-				margin: 20px;
+			#top div
+			{
+				display: inline-block;
 			}
-
-			#text-n{
-				position: absolute;
-				left: 825px;
-				top: 350px;	
-				font-size: 50px;
-			}		
-
-			.bar text {
-				fill: black;
-				font: 15px sans-serif;
-			}
-
-			#select{
-				position: absolute;
-				width: 200px;
-			}
-            .tick text {
-                fill: black;
-                font: 10px sans-serif;
-            }
-	
+			.one {
+	            width: 350px;
+	            float: left;
+	        }
+	        .two {
+	            margin-left: 350px;
+	        }
+	        body {font-family: monospace; line-height: 160%; font-size: 18px; }
+	        ul {list-style: none; margin: 0; padding: 0;}
+	        input {border: 1px dotted #ccc; background: white; font-family: monospace; padding: 10px 20px; font-size: 18px; margin: 20px 10px 20px 0; color: red;}
+	        input:focus { background-color:yellow; outline: none;}
 		</style>
 
 	</head>
 
 	<body onload="init()">
-		<label for="powerfield" >Power</label>
-	  	<input id="powerfield" type="number" name="power"><br>
-		<label for="toughnessfield" >Tougness</label>
-	  	<input id="toughnessfield" type="number" name="tougness"><br>
-		<select id="select" onchange="onSelectedCardChange()"> </select>
+		<div id="top">
+		  	<div>
+				<label for="selectCreature" >Creature</label>
+				<select id="selectCreature"> </select>
+			</div>
+			<div>
+				<label for="powerfield" >Power</label>
+				<div><select id="powerfield"> </select></div>
+		  	</div>
+		  	<div>
+				<label for="toughnessfield" >Toughness</label>
+		  		<div><select id="toughnessfield"> </select></div>
+		  	</div>
+		</div>
+		<div class="container">
+            <div class="one">
+                <select id="selectSet"> </select>
+                <ul></ul>
+            </div>
+            <div class="two">
+                <svg id="histogram_svg" width="500" height="500"></svg>
+            </div>
+        </div>
 	</body>
 
 </html>

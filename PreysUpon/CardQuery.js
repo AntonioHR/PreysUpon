@@ -43,6 +43,78 @@ var CardQuery = (function(Cards)
 	    }
 	    return result;
 	}
+
+	function getColorPredationSplit(pow, tough)
+	{
+	    var result =
+	        {
+	            Colorless: getAllColorless().getPredationSplit(pow, tough),
+	            Multicolored: getAllMulticolored().getPredationSplit(pow, tough)
+	        };
+	    for (var c in AllColors)
+	    {
+	        result[AllColors[c]] = getAllWithColorMono(AllColors[c]).getPredationSplit(pow, tough);
+	    }
+	    return result;
+	}
+
+
+	function getColorPredationSplitTable(pow, tough)
+	{
+		var result = [];
+
+		var Colorless =  getAllColorless().getPredationSplit(pow, tough);
+		Colorless.key  = "Colorless";
+		result.push(Colorless);
+		var Multicolored =  getAllMulticolored().getPredationSplit(pow, tough);
+		Multicolored.key  = "Multicolored";
+		result.push(Multicolored);
+
+	    for (var c in AllColors)
+	    {
+	    	var thisColor = getAllWithColorMono(AllColors[c]).getPredationSplit(pow, tough);
+	    	thisColor.key = AllColors[c];
+	        result.push(thisColor);
+	    }
+	    return result;
+	}
+
+	function getPredationColorSplitTable(pow, tough)
+	{
+		var result = [];
+
+		var Prey =  getAllPrey(pow, tough).getColorGroupSplit();
+		Prey.key  = "Prey";
+		result.push(Prey);
+
+		var BounceOff =  getAllBounceOff(pow, tough).getColorGroupSplit();
+		BounceOff.key  = "BounceOff";
+		result.push(BounceOff);
+
+		var Trade =  getAllTrades(pow, tough).getColorGroupSplit();
+		Trade.key  = "Trade";
+		result.push(Trade);
+
+		var Predator =  getAllPredators(pow, tough).getColorGroupSplit();
+		Predator.key  = "Predator";
+		result.push(Predator);
+	    return result;
+	}
+
+
+	function getPredationSplit(pow, tough)
+	{
+		var result =
+	        {
+        		Prey:getAllPrey(pow, tough),
+        		BounceOff:getAllBounceOff(pow, tough),
+        		Trade:getAllTrades(pow, tough),
+        		Predator:getAllPredators(pow, tough),
+        		cardCount:size
+	        };
+        return result;
+	}
+
 	function getAllColorless() {
 	    return CardQuery(Cards.filter(hasNoColors));
 	}
@@ -105,7 +177,11 @@ var CardQuery = (function(Cards)
 		getAllTrades: getAllTrades,
 		getAllInEdition: getAllInEdition,
 		getCardWithName: getCardWithName,
-		getColorGroupSplit: getColorGroupSplit
+		getColorGroupSplit: getColorGroupSplit,
+		getColorPredationSplit: getColorPredationSplit,
+		getColorPredationSplitTable: getColorPredationSplitTable,
+		getPredationColorSplitTable: getPredationColorSplitTable,
+		getPredationSplit: getPredationSplit
 	};
 });
 

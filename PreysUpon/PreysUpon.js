@@ -1,110 +1,106 @@
 var init = function () {
-    margin = { top: 25, right: 25, bottom: 25, left: 25 };
+    setsFiltered = filterJustCreaturesFromAllSets(setsMTG);
+    this.setSelector = mtgSetsSelector(
+        d3.select("#selectSet"),
+        d3.select("body").select("ul"),
+        setsFiltered,
+        OnSetsChange);
 
-    var width = 1024 - this.margin.left - this.margin.right;
-    var height = 600 - this.margin.top - this.margin.bottom;
+    var histogramsvg = d3.select("#histogram_svg");
+    var width = histogramsvg.attr("width");
+    var height = histogramsvg.attr("height");
+    this.histogram = makeHisto(histogramsvg);
 
-    svgContainer = d3.select("body").append("svg").attr("width", width).attr("height", height);
-
-    this.creatureCards = ParseCreaturesFromAllCards(cardsMTG);
-    buildColorArrays();
-
-
-    histoWidth = 300;
-    histoHeight = 200;
-
-    parent = addPositionedContainer(svgContainer, 100, 100);
-    histogramPosData = applyMargin(parent, margin, histoWidth, histoHeight);
-
-    this.mainHisto = Histo(parent);
-    mainHisto.init();
-
-    // this.mainHisto = buildHisto(
-    //     parent, histoWidth, histoHeight, this.allColors, this.creatureCards.length);
-
-    this.currentCreaturePool = this.creatureCards.getAllInEdition(["SOM"]);
-
-    this.CreatureSelector = populateCreatureComboBox(currentCreaturePool);
-
-    powerfield = d3.select("#powerfield");
-    toughnessfield = d3.select("#toughnessfield");
-    powerfield.on("input", function()
+    this.powerTough = powerToughnessSelector(
+        d3.select("#selectCreature"),
+        d3.select("#powerfield"),
+        d3.select("#toughnessfield"),
+        function()
         {
-            powerfield.attr("value", this.value);
-            updateBars();
-        });
-    toughnessfield.on("input", function()
-        {
-            toughnessfield.attr("value", this.value);
-            updateBars();
+            updatePreyFilters();
+            redraw();
         });
 
-
-
-
-    // barWidth = getBarWidth(this.mainHisto);
-
-    // x = stackBar(this.mainHisto.origin, barWidth, 100, "red");
-    // stackBar(x.g, barWidth, 100, "green");
-    // this.mainHisto.parent.selectAll("text").text("Hey");
+    // this.creatureCards = ParseCreaturesFromAllCards(cardsMTG);
+    // setupPowToughFields();
 };
 
-function updateBars()
+function updateSelectedSets()
 {
-    mainHisto.show(this.currentCreaturePool, 
-        powerfield.attr("value"), 
-        toughnessfield.attr("value"));
+    this.data = CardQuery(this.setSelector.getSelectedCards());
+}
+function updatePreyFilters()
+{
+    this.splitData = this.data.getColorPredationSplitTable(
+            this.powerTough.getPower()
+            , this.powerTough.getToughness());
 }
 
-//Callbacks for the HTML page
-function onSelectedCardChange() {
-    var currentName = this.CreatureSelector.options[this.CreatureSelector.selectedIndex].text;
-
-    //Pega o primeiro card da listagem com aquele nome
-    this.selectedCard = this.creatureCards.getCardWithName(currentName);
-    this.powerfield.attr("value", selectedCard.power);
-    this.powerfield.val = selectedCard.power;
-    this.toughnessfield.attr("value", selectedCard.toughness);
-    this.toughnessfield.val = selectedCard.toughness;
-
-    console.log(this.selectedCard);
-
-    updateBars();
-    // mainHisto.show(currentCreaturePool, selectedCard.power, selectedCard.toughness);
-    // populateBars();
+function redraw()
+{
+    histogram.update(this.splitData);
 }
 
-//Initialization Functions
-function populateCreatureComboBox(cardQuery) {
-    creatureSelector = document.getElementById("select");
-
-    //Pegando os nomes para ordenar
-    var names = [];
-    var creatureCards = cardQuery.cards;
-    creatureCards.forEach(function (card) {
-        names.push(card.name);
-    });
-
-    names.sort();
-    var option = document.createElement("option");
-    names.forEach(function (name) {
-        option = document.createElement("option");
-        option.text = name;
-        creatureSelector.add(option);
-    });
-
-    creatureSelector.selectedIndex = -1;
-    return creatureSelector;
-}
-
-
-function buildColorArrays() {
-    this.allColors = ["Blue", "White", "Green", "Black", "Red"];
-    this.allColorIdentity = ["U", "W", "G", "B", "R"];
+function OnSetsChange()
+{
+    // populateCreatureComboBox(CardQuery(this.setSelector.getSelectedCards()));
+    updateSelectedSets();
+    updatePreyFilters();
+    this.powerTough.update(this.data.cards);
+    redraw();
 }
 
 
 
 
+// //Callbacks for the HTML page
+// function onSelectedCardChange() {
+//     var currentName = this.CreatureSelector.options[this.CreatureSelector.selectedIndex].text;
+
+//     //Pega o primeiro card da listagem com aquele nome
+//     selectedCard = this.creatureCards.getCardWithName(currentName);
+//     this.powerfield.attr("value", selectedCard.power);
+//     this.powerfield.val = selectedCard.power;
+//     this.toughnessfield.attr("value", selectedCard.toughness);
+//     this.toughnessfield.val = selectedCard.toughness;
+// }
+
+// //Initialization Functions
+// function populateCreatureComboBox(cardQuery) {
+//     creatureSelector = document.getElementById("select");
+
+//     //Pegando os nomes para ordenar
+//     var names = [];
+//     var creatureCards = cardQuery.cards;
+//     creatureCards.forEach(function (card) {
+//         names.push(card.name);
+//     });
+
+//     names.sort();
+//     var option = document.createElement("option");
+//     names.forEach(function (name) {
+//         option = document.createElement("option");
+//         option.text = name;
+//         creatureSelector.add(option);
+//     });
+
+//     creatureSelector.selectedIndex = -1;
+//     return creatureSelector;
+// }
 
 
+// function setupPowToughFields()
+// {
+//     this.powerfield = d3.select("#powerfield");
+//     this.toughnessfield = d3.select("#toughnessfield");
+//     this.powerfield.on("input", function()
+//         {
+//             powerfield.attr("value", this.value);
+//             updateBars();
+//         });
+//     this.toughnessfield.on("input", function()
+//         {
+//             toughnessfield.attr("value", this.value);
+//             updateBars();
+//         });
+// }
