@@ -48,10 +48,7 @@ MakeHistogram.prototype.update = function (data, histogramIndex)
 		{
 			dataStacks[i][j].key = dataStacks[i].key;
 		}
-	}
-
-	/*d3.selectAll("#legendParent").remove();
-	d3.selectAll("#axesParent").remove();*/
+	}	
 
 	var elements =  this.g.selectAll(".bar").data(dataStacks);
 	elements.exit().remove();
@@ -82,17 +79,17 @@ MakeHistogram.prototype.update = function (data, histogramIndex)
     axesParent.append("g")
       .attr("class", "axis")
       .attr("transform", translate(0, this.height))
-      .call(d3.axisBottom(this.x));
+      .call(d3.axisBottom(this.x))
+      .attr("font-size", "8px");    
 
     axesParent.append("g")
         .attr("class", "axis")
         .call(d3.axisLeft(this.y).ticks(null, "s"))
      	.append("text")
-        .attr("x", 2)
-        .attr("y", this.y(this.y.ticks().pop()) + 0.5)
+        .attr("x", -10)
+        .attr("y", this.y(this.y.ticks().pop()) - 10)
         .attr("dy", "0.32em")
-        .attr("fill", "#000")
-        .attr("font-weight", "bold")
+        .attr("fill", "#000")        
         .attr("text-anchor", "start")
         .text("Card Count");
 
@@ -104,19 +101,35 @@ MakeHistogram.prototype.update = function (data, histogramIndex)
       	.selectAll("g")
       	.data(this.predationGroups)
       	.enter().append("g")
-        .attr("transform", function(d, i){return translate(0, i*20)});
+        .attr("transform", function(d, i){return translate(0, i*-20 + 50)});
 
 	legend.append("rect")
 		.attr("x", this.width - 19)
 		.attr("width", 19)
 		.attr("height", 19)
-		.attr("fill", this.z);
+		.attr("fill", this.z);		
 
 	legend.append("text")
 		.attr("x", this.width - 24)
 		.attr("y", 9.5)
 		.attr("dy", "0.32em")
-	.text(function(d){return d;});
+		.attr("font-weight", "bold")
+		.text(function(d){return d;});
+
+	var title = this.g.append("g");
+
+	var power = d3.select("#powerfield").property("value");
+    var toughness = d3.select("#toughnessfield").property("value");
+
+	title.append("text")
+		.attr("x", this.width * 0.225)
+		.attr("y", -10)		
+		.attr("font-weight", "bold")
+		.attr("font-size", 12)
+		.text(function(d){
+				return "id: " + this.histogramIndex + " Power: " + power + " Toughness:  "+ toughness;
+			}.bind(this));	
+	
 }
 
 MakeHistogram.prototype.onMouseOver = function (d)

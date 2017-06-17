@@ -34,9 +34,9 @@ function updatePreyFilters()
 
 function redraw()
 {
-	var histogramSVG = d3.select(".two").append("svg").attr("width", 450).attr("height", 450);	
-    var histogramObject = new MakeHistogram(histogramSVG);
-    histogramObject.update(this.splitData, this.histogramsCollection.length + 1);
+	var histogramSVG = d3.select(".two").append("svg").attr("width", 400).attr("height", 400);	
+    var histogramObject = new MakeHistogram(histogramSVG);    
+    histogramObject.update(this.splitData, this.histogramsCollection.length);
 
     this.histogramsCollection.push(histogramObject);
 
