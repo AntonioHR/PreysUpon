@@ -111,6 +111,7 @@ var CardQuery = (function(Cards)
 				Trade:getAllTrades(pow, tough),
 				Predator:getAllPredators(pow, tough),
 				cardCount:size
+				// AllSets = function(){return [Prey, BounceOff, Trade, Predator]}
 			};
 		return result;
 	}
@@ -135,6 +136,14 @@ var CardQuery = (function(Cards)
 	{
 		var filter = Cards.filter(function (card) {
 			return anyMatches(card.printings, editions);
+		});
+		return CardQuery(filter);
+	}
+
+	function getAllInRarities(rarities)
+	{
+		var filter = Cards.filter(function (card) {
+			return rarities.includes(card.rarity);
 		});
 		return CardQuery(filter);
 	}
@@ -181,7 +190,8 @@ var CardQuery = (function(Cards)
 		getColorPredationSplit: getColorPredationSplit,
 		getColorPredationSplitTable: getColorPredationSplitTable,
 		getPredationColorSplitTable: getPredationColorSplitTable,
-		getPredationSplit: getPredationSplit
+		getPredationSplit: getPredationSplit,
+		getAllInRarities: getAllInRarities
 	};
 });
 

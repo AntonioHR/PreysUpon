@@ -6,7 +6,7 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 
 	function init()
 	{
-		this.selections = [];
+		selections = [];
 	}
 
 	function addSelection(element)
@@ -22,20 +22,22 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 	}
 
 	function update(newData){
-		var elements = origin.selectAll("d")
+		selections = newData;
+		var elements = origin.selectAll("div")
 			.data(newData);
 
 		elements.exit().remove();
 
 		var newElements = elements.enter()
-			.append("d");
+			.append("div");
 
 		var totalElements = newElements.merge(elements);
 
 
 
 		newElements.append("input")
-			.attr("type", "checkbox");
+			.attr("type", "checkbox")
+			.attr("checked", true);
 
 		totalElements.selectAll("input")
 			.datum(function(d){return d;})

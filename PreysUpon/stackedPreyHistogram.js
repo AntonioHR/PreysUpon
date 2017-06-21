@@ -1,5 +1,12 @@
-function makeHisto(svg){
+var check = checkBoxFilter;
 
+function makeHisto(parent, svg){
+	if(!svg)
+	{
+		svg = parent.append("svg")
+			.attr("width", 400)
+			.attr("height", 400);
+	}
 	var margin = {top: 20, right: 20, bottom: 30, left: 40},
 		width = +svg.attr("width") - margin.left - margin.right,
 		height = +svg.attr("height") - margin.top - margin.bottom,
@@ -8,6 +15,10 @@ function makeHisto(svg){
 			"Black", "Red", "Multicolored", "Colorless"],
 		predationGroups = ["Prey", "Trade", "BounceOff", "Predator"],
 		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare", "Special"];
+
+	//Filters
+		var _rarity_filter = rarities,
+			_predation_filter = [-99, -99];
 
 	var x = d3.scaleBand()
 		.rangeRound([0, width])
@@ -30,25 +41,80 @@ function makeHisto(svg){
 		.attr("class", "tooltip");
 
 	tooltipDiv.append("ul");
+
+
+	var checkboxDiv = parent.append("form");
+	var rarities_filter = rarities;
+	var checkBoxFilter = check(checkboxDiv,
+		function(newFilters)
+		{
+			_rarities_filter = newFilters;
+			console.log(_rarity_filter);
+			render();
+		});
+
+	checkBoxFilter.update(rarities);
 		// .style("opacity", 0);
 
 	function translate(x, y)
 	{
 		return "translate("+x+","+y+")";
 	}
-	var update = function data(newData)
+
+	var data = function(value)
 	{
+		if(!value)
+			return _full_data;
+		else
+		{
+			_full_data = value;
+		}
+		return this;
+	};
+
+	var rarity_filter = function(value)
+	{
+		if(!value)
+		{
+			return value;
+		} else
+		{
+			_rarity_filter = value;
+		}
+		return this;
+	};
+
+	var predation_filter = function(value)
+	{
+		if(!value)
+		{
+			return value;
+		} else
+		{
+			_predation_filter = value;
+		}
+		return this;
+	};
+
+	var render = function ()
+	{
+
+		var filtered_data = _full_data;
+
+		filtered_data = filtered_data.getAllInRarities(_rarity_filter);
+
+		var formatted_data = filtered_data.getColorPredationSplitTable(_predation_filter[0], _predation_filter[1]);
 
 		var t = d3.transition()
 			.duration(750);
 
-		y.domain([0, d3.max(newData, function(d){return d.cardCount;})]).nice();
+		y.domain([0, d3.max(formatted_data, function(d){return d.cardCount;})]).nice();
 		var dataStacks = d3.stack()
 		.keys(predationGroups)
 		.value(function(d, key)
 			{
 				return d[key].cardCount;
-			})(newData);
+			})(formatted_data);
 
 		for(var i in dataStacks)
 		{
@@ -160,6 +226,9 @@ function makeHisto(svg){
 			.style("opacity", 0);
 	}
 	return {
-		update:update
+		render:render,
+		predation_filter: predation_filter,
+		data: data,
+		rarity_filter: rarity_filter
 	};
 }

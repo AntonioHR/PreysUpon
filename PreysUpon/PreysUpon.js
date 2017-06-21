@@ -7,9 +7,10 @@ var init = function () {
         OnSetsChange);
 
     var histogramsvg = d3.select("#histogram_svg");
+    var histoParent = d3.select(histogramsvg.node().parentElement);
     var width = histogramsvg.attr("width");
     var height = histogramsvg.attr("height");
-    this.histogram = makeHisto(histogramsvg);
+    this.histogram = makeHisto(histoParent,  histogramsvg);
 
     this.powerTough = powerToughnessSelector(
         d3.select("#selectCreature"),
@@ -17,13 +18,10 @@ var init = function () {
         d3.select("#toughnessfield"),
         function()
         {
-            updatePreyFilters();
+            updatePredationFilter();
             redraw();
         });
 
-    var checkboxParent = d3.select("#rarity_checkbox");
-    var rarity_checkbox = checkBoxFilter(checkboxParent, function(d){console.log(rarity_checkbox.getSelections());});
-    rarity_checkbox.update(["Rare", "Mythic"]);
     // this.creatureCards = ParseCreaturesFromAllCards(cardsMTG);
     // setupPowToughFields();
 };
@@ -32,23 +30,26 @@ function updateSelectedSets()
 {
     this.data = CardQuery(this.setSelector.getSelectedCards());
 }
-function updatePreyFilters()
+function updatePredationFilter()
 {
-    this.splitData = this.data.getColorPredationSplitTable(
-            this.powerTough.getPower(),
-            this.powerTough.getToughness());
+    this.predation_filter = [this.powerTough.getPower(), this.powerTough.getToughness()];
+    // this.splitData = this.data.getColorPredationSplitTable(
+    //         this.powerTough.getPower(),
+    //         this.powerTough.getToughness());
 }
 
 function redraw()
 {
-    histogram.update(this.splitData);
+    histogram.data(this.data);
+    histogram.predation_filter(this.predation_filter);
+    histogram.render();
 }
 
 function OnSetsChange()
 {
     // populateCreatureComboBox(CardQuery(this.setSelector.getSelectedCards()));
     updateSelectedSets();
-    updatePreyFilters();
+    updatePredationFilter();
     this.powerTough.update(this.data.cards);
     redraw();
 }
