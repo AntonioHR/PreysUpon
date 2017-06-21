@@ -66,7 +66,7 @@ function makeHisto(svg){
 		var newElements = elements.enter().append("g")
 			.attr("class", "bar");
 		elements = newElements.merge(elements)
-			.attr("fill", function(d){return z(d.key);})
+			.attr("fill", function(d){return z(d.key);});
 
 
 		var subElements = elements.selectAll("rect")

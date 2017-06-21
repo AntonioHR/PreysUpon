@@ -21,6 +21,9 @@ var init = function () {
             redraw();
         });
 
+    var checkboxParent = d3.select("#rarity_checkbox");
+    var rarity_checkbox = checkBoxFilter(checkboxParent, function(d){console.log(rarity_checkbox.getSelections());});
+    rarity_checkbox.update(["Rare", "Mythic"]);
     // this.creatureCards = ParseCreaturesFromAllCards(cardsMTG);
     // setupPowToughFields();
 };
@@ -32,8 +35,8 @@ function updateSelectedSets()
 function updatePreyFilters()
 {
     this.splitData = this.data.getColorPredationSplitTable(
-            this.powerTough.getPower()
-            , this.powerTough.getToughness());
+            this.powerTough.getPower(),
+            this.powerTough.getToughness());
 }
 
 function redraw()
