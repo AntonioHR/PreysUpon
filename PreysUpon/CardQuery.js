@@ -16,12 +16,11 @@ var CardQuery = (function(Cards)
 	    }
 	    return false;
 	}
+
 	function hasNoColors(card)
 	{
 	    return card.colors === undefined;
 	}
-
-
 
 	function getCardWithName(name) {
 	    var card = Cards.find(function (card) {

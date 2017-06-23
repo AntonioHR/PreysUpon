@@ -8,8 +8,6 @@ function mtgSetsSelector(selector, listOrigin, allSets, updateCallback)
         .append("option")
         .text(function(d){return d.name;});
 
-
-
     selector.on("change", onSetSelected);
     draw();
 
@@ -24,17 +22,17 @@ function mtgSetsSelector(selector, listOrigin, allSets, updateCallback)
         updateCallback();
     }
 
-    function draw(){
-        var elements = listOrigin.selectAll("li")
-            .data(selections);
+    function draw(){        
+        var elements = listOrigin.selectAll("li").data(selections);
+
         elements.exit().remove();
         elements.selectAll("button").remove();
+
         var p = elements.enter();
         var newEls = p.append("li");
-        var total =newEls.merge(elements)
-                .text(function(d){return d.name + "("+d.cards.length +")";});
-        total.append("button")
-                .text("x")
+
+        var total = newEls.merge(elements).text(function(d){return d.name + "("+d.cards.length +")";});
+        total.append("button").text("x")
                 .on("click", function(d)
                     {
                         selections.splice(selections.indexOf(d), 1);

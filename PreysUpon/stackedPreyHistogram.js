@@ -28,10 +28,10 @@ var MakeHistogram = function (svg)
 	this.tooltipDiv = d3.select("body").append("div")
 	    .attr("class", "tooltip");
 
-	this.tooltipDiv.append("ul");	    
+	this.tooltipDiv.append("ul");	    	
 };
 
-MakeHistogram.prototype.update = function (data, histogramIndex)
+MakeHistogram.prototype.update = function (data, histogramIndex, updateCallback)
 {
 	this.data = data;
 	this.histogramIndex = histogramIndex;
@@ -116,19 +116,36 @@ MakeHistogram.prototype.update = function (data, histogramIndex)
 		.attr("font-weight", "bold")
 		.text(function(d){return d;});
 
-	var title = this.g.append("g");
+	var headGroup = this.g.append("g").attr("id", "head");
 
 	var power = d3.select("#powerfield").property("value");
     var toughness = d3.select("#toughnessfield").property("value");
 
-	title.append("text")
-		.attr("x", this.width * 0.225)
+	headGroup.append("text")
+		.attr("x", this.width * 0.15)
 		.attr("y", -10)		
 		.attr("font-weight", "bold")
 		.attr("font-size", 12)
 		.text(function(d){
 				return "id: " + this.histogramIndex + " Power: " + power + " Toughness:  "+ toughness;
-			}.bind(this));	
+			}.bind(this));
+
+	var button = headGroup.append("g").attr('class', 'button')		
+		.on("click", function()
+            {
+            	updateCallback(histogramIndex);                    
+            });
+
+	button.append("rect")
+		.attr("x", this.width * 0.725)
+		.attr("y", -17)
+		.attr("height", 20)
+		.attr("width", 20);		
+				
+	button.append("text")
+		.attr("x", this.width * 0.755)
+		.attr("y", -1.5)	
+		.text("X")       
 	
 }
 
