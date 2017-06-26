@@ -2,7 +2,7 @@ var init = function () {
     setsFiltered = filterJustCreaturesFromAllSets(setsMTG);
     this.setSelector = mtgSetsSelector(
         d3.select("#selectSet"),
-        d3.select("body").select("ul"),
+        d3.select("body").select("#sets-list"),
         setsFiltered,
         OnSetsChange);
 
@@ -14,8 +14,8 @@ var init = function () {
 
     this.powerTough = powerToughnessSelector(
         d3.select("#selectCreature"),
-        d3.select("#powerfield"),
-        d3.select("#toughnessfield"),
+        d3.select("#power_field"),
+        d3.select("#toughness_field"),
         function()
         {
             updatePredationFilter();
