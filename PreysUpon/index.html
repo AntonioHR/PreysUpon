@@ -15,7 +15,14 @@
 		<script type="text/javascript" src="PreysUpon.js"></script>
 		<script type="text/javascript" src="ComparativeHistograms.js"></script>
 
-		<style type="text/css">		
+		<style type="text/css">	
+
+			#histogram-selector	{
+				margin-top: 25px;
+				display: -webkit-inline-box;
+				visibility: hidden;
+			}
+
 			#top div
 			{
 				display: inline-block;
@@ -31,7 +38,12 @@
 	        .three{
 	        	width: 100px;
 	        	float: left;
-	        }
+	        }	
+
+	        .three svg{	        	
+	        	float: left;
+	        }        	        
+
 	        body {font-family: monospace; line-height: 160%; font-size: 18px; }
 	        li{font-size: 15px;}
 	        ul {list-style: none; margin: 0; padding: 0;}
@@ -76,7 +88,24 @@
                 
             </div>
             <div class="three">
-                
+
+            	<div id="comparative-table">
+            		
+
+            	</div>
+
+	            <div id="histogram-selector">
+
+	            	<div style="margin-left: 20px">
+						<label for="histogramLeft" >Esquerda</label>
+						<div><select id="histogramLeft"> </select></div>
+				  	</div>
+				  	<div style="margin-left: 20px">
+						<label for="histogramRight" >Direita</label>
+				  		<div><select id="histogramRight"> </select></div>
+				  	</div>
+
+	            </div>                
             </div>
         </div>
 	</body>

@@ -1,7 +1,9 @@
 var init = function () {
     setsFiltered = filterJustCreaturesFromAllSets(setsMTG);
 
-    this.comparativeHistograms = new ComparativeHistograms();
+    this.comparativeHistograms = new ComparativeHistograms(
+    	d3.select("#histogramLeft"),
+		d3.select("#histogramRight"));
 
     this.histogramsCollection = [];
     this.histogramIndex = 0;
@@ -21,6 +23,8 @@ var init = function () {
             updatePreyFilters();
             var newHisto = drawHistogram(this.splitData);
             this.histogramsCollection.push(newHisto);
+
+            this.comparativeHistograms.updateSelectors(this.histogramsCollection);
 
             buildComparation();
     	}.bind(this));
@@ -65,17 +69,29 @@ function redrawHistograms(removedIndex)
 	}
 
 	this.histogramsCollection = newHistogramList; 
+
+	this.comparativeHistograms.updateSelectors(this.histogramsCollection);
+
+	this.buildComparation();
 };
 
 
 function buildComparation() {	
     if(this.histogramIndex >= 2){
-    	if(this.comparativeHistograms.startedHistogram) return;    	
-    	this.comparativeHistograms.init();
-    	this.comparativeHistograms.setHistograms(this.histogramsCollection[0], this.histogramsCollection[1]);
+    	if(this.comparativeHistograms.startedHistogram) return;
+
+    	d3.select("#histogramLeft").property("selectedIndex", 0);
+    	d3.select("#histogramRight").property("selectedIndex", 1);
+
+    	this.comparativeHistograms.init(this.histogramsCollection[0], this.histogramsCollection[1]);    	
     	this.comparativeHistograms.comparingHistograms();
-    }else{
+
+    	document.getElementById('histogram-selector').style.visibility = "visible";    	
+		
+    }else
+    {
     	this.comparativeHistograms.resetHistogram();
+    	document.getElementById('histogram-selector').style.visibility = "hidden";
     }
 }
 
