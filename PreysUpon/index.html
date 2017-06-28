@@ -5,9 +5,12 @@
 	<head>
 		<title>PreysUpon</title>
 		<script src="https://d3js.org/d3.v4.min.js"></script>	
-		<link rel="stylesheet" type="text/css" href="button.css">		
-		
+
 		<script type="text/javascript" src="AllSets.json"></script>
+
+		<link rel="stylesheet" type="text/css" href="button.css">
+		<link rel="stylesheet" type="text/css" href="svg.css">				
+		
 		<script type="text/javascript" src="CardQuery.js"></script>
 		<script type="text/javascript" src="setSelectionBox.js"></script>
 		<script type="text/javascript" src="stackedPreyHistogram.js"></script>
@@ -17,70 +20,31 @@
 
 		<style type="text/css">	
 
-			#histogram-selector	{
-				margin-top: 25px;
-				display: -webkit-inline-box;
-				visibility: hidden;
-			}
-
-			#top div
-			{
-				display: inline-block;
-			}
-			.one {
-	            width: 250px;
-	            float: left;
-	        }
-	        .two {	        
-	        	width: 800px;	
-	         	float: left;
-	        }
-	        .three{
-	        	width: 100px;
-	        	float: left;
-	        }	
-
-	        .three svg{	        	
-	        	float: left;
-	        }        	        
-
-	        body {font-family: monospace; line-height: 160%; font-size: 18px; }
-	        li{font-size: 15px;}
-	        ul {list-style: none; margin: 0; padding: 0;}
-	        input {border: 1px dotted #ccc; background: white; font-family: monospace; padding: 10px 20px; font-size: 18px; margin: 20px 10px 20px 0; color: red;}
-	        input:focus { background-color:yellow; outline: none;}
-
-			div.tooltip {
-			    position: absolute;
-			    text-align: center;
-			    padding: 2px;
-			    font: 12px sans-serif;
-			    background: #212121;
-			    border: 0px;
-			    border-radius: 8px;
-			    pointer-events: none;
-			}
+			
 		</style>
 
 	</head>
 
 	<body onload="init()">
-		<div id="top">
-		  	<div>
-				<label for="selectCreature" >Creature</label>
-				<select id="selectCreature"> </select>
-			</div>
-			<div>
-				<label for="powerfield" >Power</label>
-				<div><select id="powerfield"> </select></div>
-		  	</div>
-		  	<div>
-				<label for="toughnessfield" >Toughness</label>
-		  		<div><select id="toughnessfield"> </select></div>
-		  	</div>
-		</div>
+		
 		<div class="container">
             <div class="one">
+
+            	<div id="top">
+				  	<div>
+						<label for="selectCreature" >Creature</label>
+						<select id="selectCreature"> </select>
+					</div>
+					<div>
+						<label for="powerfield" >Power</label>
+						<select id="powerfield"> </select>
+				  	</div>
+				  	<div>
+						<label for="toughnessfield" >Toughness</label>
+				  		<select id="toughnessfield"> </select>
+				  	</div>
+				</div>
+				
                 <select id="selectSet"> </select>
                 <ul></ul>
             </div>

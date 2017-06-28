@@ -121,7 +121,7 @@ MakeHistogram.prototype.update = function (data, histogramIndex, updateCallback)
 	this.power = d3.select("#powerfield").property("value");
     this.toughness = d3.select("#toughnessfield").property("value");
 
-    this.name = "Id: " + this.histogramIndex + " P: " + this.power + " T:  "+ this.toughness;
+    this.name = "Id: " + this.histogramIndex + " Power: " + this.power + " Toughness:  "+ this.toughness;
 
 	headGroup.append("text")
 		.attr("x", this.width * 0.15)
@@ -129,7 +129,7 @@ MakeHistogram.prototype.update = function (data, histogramIndex, updateCallback)
 		.attr("font-weight", "bold")
 		.attr("font-size", 12)
 		.text(function(d){
-				return "Id: " + this.histogramIndex + " Power: " + this.power + " Toughness:  "+ this.toughness;
+				return this.name;
 			}.bind(this));
 
 	var button = headGroup.append("g").attr('class', 'button')		

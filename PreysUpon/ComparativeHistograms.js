@@ -256,6 +256,22 @@ ComparativeHistograms.prototype.onMouseOver = function(d, index)
     var newElements = elements.enter().append("li");
 
 	elements.merge(newElements)
+		.attr("class", function (d) {			
+			var check1 = cardsLeft.filter(function (e) {
+				return (d.name == e.name);
+			});
+
+			var check2 = cardsRight.filter(function (e) {
+				return (d.name == e.name);
+			});			
+
+			if(check1.length != 0 && check2.length != 0) return "center-matrix";
+
+			if(check1.length != 0) return "left-matrix";
+
+			if(check2.length != 0) return "right-matrix";
+
+		}.bind(this))
 		.text(function(d){return d.cmc + "-" + d.name + "(" + d.power + "/" + d.toughness + ")";})
 		.style("color", function(d){return this.colorsRarity(d.rarity);}.bind(this));
 };
@@ -323,7 +339,6 @@ ComparativeHistograms.prototype.returnHistograms = function()
     return [this.histogramLeft, this.histogramRight];
 }
 
-
 ComparativeHistograms.prototype.updateSelectors = function(dataset) {
 	this.currentDataset = dataset;
 
@@ -332,11 +347,11 @@ ComparativeHistograms.prototype.updateSelectors = function(dataset) {
 
 	var options = this.leftSelector.selectAll("option").data(this.currentDataset).enter()
         .append("option")
-        .text(function(d){return d.name;});
+        .text(function(d){return "Id: " + d.histogramIndex;});
 
     var options = this.rightSelector.selectAll("option").data(this.currentDataset).enter()
         .append("option")
-        .text(function(d){return d.name;});
+        .text(function(d){return "Id: " + d.histogramIndex;});
 
 };
 
