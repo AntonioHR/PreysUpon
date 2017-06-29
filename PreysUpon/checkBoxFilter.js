@@ -58,11 +58,6 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 			{
 				return "toggle_slider round " + d;
 			});
-
-		// totalElements.selectAll("label")
-		// 	.datum(function(d){return d;})
-		// 	.attr("for", nameFunction)
-		// 	.text(nameFunction);
 	}
 
 	function getSelections()

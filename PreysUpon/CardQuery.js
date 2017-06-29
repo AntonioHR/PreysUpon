@@ -148,6 +148,16 @@ var CardQuery = (function(Cards)
 		return CardQuery(filter);
 	}
 
+
+	function getAllWithCostBetween(costRange)
+	{
+		var filter = Cards.filter(function (card) {
+			return card.cmc >= costRange[0] && card.cmc <= costRange[1];
+		});
+		return CardQuery(filter);
+	}
+
+
 	//When combat results in no deaths
 	function getAllBounceOff(power, toughness) {
 		var filter =  Cards.filter(function (card) {
@@ -191,7 +201,8 @@ var CardQuery = (function(Cards)
 		getColorPredationSplitTable: getColorPredationSplitTable,
 		getPredationColorSplitTable: getPredationColorSplitTable,
 		getPredationSplit: getPredationSplit,
-		getAllInRarities: getAllInRarities
+		getAllInRarities: getAllInRarities,
+		getAllWithCostBetween: getAllWithCostBetween
 	};
 });
 

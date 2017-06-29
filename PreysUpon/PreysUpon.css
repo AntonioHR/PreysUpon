@@ -116,11 +116,11 @@ input:checked + .toggle_slider:before {
 
 .Common
 {
-    background-color: #727272;  
+    background-color: #a0a0a0;  
 }
 .Uncommon
 {
-    background-color: #979ca8;  
+    background-color: #ced6e8;  
 }
 .Rare
 {
@@ -138,7 +138,7 @@ input:checked + .Common
 }
 input:checked + .Uncommon
 {
-    background-color: #424449;  
+    background-color: #686b72;  
 }
 input:checked + .Rare
 {

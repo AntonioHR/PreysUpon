@@ -18,7 +18,8 @@ function makeHisto(parent, svg){
 
 	//Filters
 		var _rarity_filter = rarities,
-			_predation_filter = [-99, -99];
+			_predation_filter = [-99, -99],
+			_cost_filter = [0, 100];
 
 	var x = d3.scaleBand()
 		.rangeRound([0, width])
@@ -45,16 +46,23 @@ function makeHisto(parent, svg){
 
 	var checkboxDiv = parent.append("form");
 	var rarities_filter = rarities;
-	var checkBoxFilter = check(checkboxDiv,
+	var rarityCheckboxFilter = check(checkboxDiv,
 		function(newFilters)
 		{
 			_rarities_filter = newFilters;
 			console.log(_rarity_filter);
 			render();
 		});
+	rarityCheckboxFilter.update(rarities);
 
-	checkBoxFilter.update(rarities);
-		// .style("opacity", 0);
+	var costFilterDiv = parent.append("div").attr("class", "col-sm-6 offset-2");
+	var costSliderFilter = CostFilter(costFilterDiv, function(range, isOnEdges)
+		{
+		 	_cost_filter[0] = isOnEdges[0]? -99 : range[0];
+		 	_cost_filter[1] = isOnEdges[1]? 99 : range[1];
+			console.log(predation_filter())
+			render();
+		}, [0, 10], true, "ex1")
 
 	function translate(x, y)
 	{
@@ -102,6 +110,7 @@ function makeHisto(parent, svg){
 		var filtered_data = _full_data;
 
 		filtered_data = filtered_data.getAllInRarities(_rarity_filter);
+		filtered_data = filtered_data.getAllWithCostBetween(_cost_filter);
 
 		var formatted_data = filtered_data.getColorPredationSplitTable(_predation_filter[0], _predation_filter[1]);
 
