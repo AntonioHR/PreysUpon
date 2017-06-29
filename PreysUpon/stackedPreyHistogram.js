@@ -14,7 +14,7 @@ function makeHisto(parent, svg){
 		colorGroups = ["Blue", "White", "Green",
 			"Black", "Red", "Multicolored", "Colorless"],
 		predationGroups = ["Prey", "Trade", "BounceOff", "Predator"],
-		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare", "Special"];
+		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare"];
 
 	//Filters
 		var _rarity_filter = rarities,

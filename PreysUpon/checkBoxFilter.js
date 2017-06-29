@@ -29,7 +29,8 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 		elements.exit().remove();
 
 		var newElements = elements.enter()
-			.append("div");
+			.append("label")
+			.attr("class", "switch");
 
 		var totalElements = newElements.merge(elements);
 
@@ -51,12 +52,17 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 				updateCallback(selections);
 			});
 
-		newElements.append("label");
-
-		totalElements.selectAll("label")
+		newElements.append("div")
 			.datum(function(d){return d;})
-			.attr("for", nameFunction)
-			.text(nameFunction);
+			.attr("class", function(d)
+			{
+				return "toggle_slider round " + d;
+			});
+
+		// totalElements.selectAll("label")
+		// 	.datum(function(d){return d;})
+		// 	.attr("for", nameFunction)
+		// 	.text(nameFunction);
 	}
 
 	function getSelections()

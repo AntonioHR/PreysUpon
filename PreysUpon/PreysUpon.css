@@ -33,6 +33,7 @@ div.tooltip {
       color: #f4511e;
       font-size: 200px;
 }
+/*
 .check-common .btn-primary{
     background-color: #000000;	
     border-color: #000000;
@@ -51,3 +52,100 @@ div.tooltip {
     background-color: #A12417;	
     border-color: #A12417;
 }
+
+*/
+
+
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.toggle_slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+.toggle_slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .toggle_slider {
+  background-color: #2196F3;
+}
+
+input:focus + .toggle_slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .toggle_slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded toggle_sliders */
+.toggle_slider.round {
+  border-radius: 34px;
+}
+
+.toggle_slider.round:before {
+  border-radius: 50%;
+}
+
+.Common
+{
+    background-color: #727272;  
+}
+.Uncommon
+{
+    background-color: #979ca8;  
+}
+.Rare
+{
+    background-color: #ffd26b;
+}
+.Mythic
+{
+    background-color: #ff9156;  
+}
+
+
+input:checked + .Common
+{
+    background-color: #000000;  
+}
+input:checked + .Uncommon
+{
+    background-color: #424449;  
+}
+input:checked + .Rare
+{
+    background-color: #FFB401;
+}
+input:checked + .Mythic
+{
+    background-color: #d63302;  
+}
+
