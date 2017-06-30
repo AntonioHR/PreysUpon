@@ -14,7 +14,8 @@ function makeHisto(parent, svg){
 		colorGroups = ["Blue", "White", "Green",
 			"Black", "Red", "Multicolored", "Colorless"],
 		predationGroups = ["Prey", "Trade", "BounceOff", "Predator"],
-		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare"];
+		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare"],
+		base_count = 40;
 
 	//Filters
 		var _rarity_filter = rarities,
@@ -117,7 +118,9 @@ function makeHisto(parent, svg){
 		var t = d3.transition()
 			.duration(750);
 
-		y.domain([0, d3.max(formatted_data, function(d){return d.cardCount;})]).nice();
+		var maxCardCount = d3.max(formatted_data, function(d){return d.cardCount;});
+		var yMax = (maxCardCount > base_count)? maxCardCount:base_count;
+		y.domain([0, yMax]).nice();
 		var dataStacks = d3.stack()
 		.keys(predationGroups)
 		.value(function(d, key)
@@ -133,8 +136,8 @@ function makeHisto(parent, svg){
 			}
 		}
 
-		d3.selectAll("#legendParent").remove();
-		d3.selectAll("#axesParent").remove();
+		parent.selectAll(".legendParent").remove();
+		parent.selectAll(".axesParent").remove();
 
 		var elements =  g.selectAll(".bar").data(dataStacks);
 		elements.exit().remove();
@@ -163,7 +166,7 @@ function makeHisto(parent, svg){
 			.attr("y", function(d){return y(d[1]);})
 			.attr("height", function(d){return y(d[0]) - y(d[1]);});
 
-		var axesParent = g.append("g").attr("id", "axesParent");
+		var axesParent = g.append("g").attr("class", "axesParent");
 		axesParent.append("g")
 			.attr("class", "axis")
 			.attr("transform", translate(0, height))
@@ -181,7 +184,7 @@ function makeHisto(parent, svg){
 				.attr("text-anchor", "start")
 				.text("Card Count");
 
-		var legendParent = g.append("g").attr("id", "axesParent");
+		var legendParent = g.append("g").attr("class", "legendParent");
 		var legend = legendParent.append("g")
 				.attr("font-family", "sans-serif")
 				.attr("font-size", 10)

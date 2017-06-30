@@ -6,8 +6,12 @@ var init = function () {
         setsFiltered,
         OnSetsChange);
 
-    this.mainHistogram = createBaseHistogram();
+    var mainHistoSVG = d3.select("#histogram_svg");
+    var mainHistoOrigin = d3.select(mainHistoSVG.node().parentElement);
+    this.mainHistogram = makeHisto(mainHistoOrigin, mainHistoSVG);
+
     var histos_origin = d3.select("#histograms-origin");
+    var histos = []
 
 
     this.powerTough = powerToughnessSelector(
@@ -17,15 +21,17 @@ var init = function () {
         function()
         {
             updatePredationFilter();
-            redraw();
+            redraw(mainHistogram);
         });
     this.powerToughBtn = d3.select("#button-creature-add");
         powerToughBtn.on("click", function()
         {
             console.log("clicked add");
-            createHistogramSlot(histos_origin);
-            // updatePredationFilter();
-            // redraw();   
+            var histo_svg = createHistogramSlot(histos_origin);
+            var histo_origin = d3.select(histo_svg.node().parentElement);
+            var newHisto = makeHisto(histo_origin, histo_svg);
+            histos.push(newHisto);
+            redraw(newHisto);
         });
 };
 
@@ -55,15 +61,6 @@ function createHistogramSlot(origin)
         .attr("height", "250");
 }
 
-function createBaseHistogram()
-{
-    var histogramsvg = d3.select("#histogram_svg");
-    var histoParent = d3.select(histogramsvg.node().parentElement);
-    var width = histogramsvg.attr("width");
-    var height = histogramsvg.attr("height");
-    return makeHisto(histoParent,  histogramsvg);
-}
-
 function updateSelectedSets()
 {
     this.data = CardQuery(this.setSelector.getSelectedCards());
@@ -73,11 +70,11 @@ function updatePredationFilter()
     this.predation_filter = [this.powerTough.getPower(), this.powerTough.getToughness()];
 }
 
-function redraw()
+function redraw(histo)
 {
-    mainHistogram.data(this.data);
-    mainHistogram.predation_filter(this.predation_filter);
-    mainHistogram.render();
+    histo.data(this.data);
+    histo.predation_filter(this.predation_filter);
+    histo.render();
 }
 
 function OnSetsChange()
@@ -85,5 +82,5 @@ function OnSetsChange()
     updateSelectedSets();
     updatePredationFilter();
     this.powerTough.update(this.data.cards);
-    redraw();
+    redraw(mainHistogram);
 }
