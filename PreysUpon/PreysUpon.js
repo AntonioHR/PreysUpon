@@ -6,11 +6,9 @@ var init = function () {
         setsFiltered,
         OnSetsChange);
 
-    var histogramsvg = d3.select("#histogram_svg");
-    var histoParent = d3.select(histogramsvg.node().parentElement);
-    var width = histogramsvg.attr("width");
-    var height = histogramsvg.attr("height");
-    this.histogram = makeHisto(histoParent,  histogramsvg);
+    this.mainHistogram = createBaseHistogram();
+    var histos_origin = d3.select("#histograms-origin");
+
 
     this.powerTough = powerToughnessSelector(
         d3.select("#selectCreature"),
@@ -21,10 +19,50 @@ var init = function () {
             updatePredationFilter();
             redraw();
         });
-
-    // this.creatureCards = ParseCreaturesFromAllCards(cardsMTG);
-    // setupPowToughFields();
+    this.powerToughBtn = d3.select("#button-creature-add");
+        powerToughBtn.on("click", function()
+        {
+            console.log("clicked add");
+            createHistogramSlot(histos_origin);
+            // updatePredationFilter();
+            // redraw();   
+        });
 };
+
+function createHistogramSlot(origin)
+{
+    // <div class="col-sm-6">
+    //     <div class="well">
+    //         <div class="row">
+    //             <button class="close glyphicon glyphicon-remove float-right"></button>
+
+    //             <svg id="histogram_svg" width="250" height="250"></svg>
+    //         </div>
+    //     </div>
+    // </div>
+
+    var div = origin
+                .append("div").attr("class", "col-sm-6")
+                    .append("div").attr("class", "well")
+                        .append("div").attr("class", "row");
+
+    div.append("button").attr("class", "close glyphicon glyphicon-remove float-right");
+
+
+    return div.append("svg")
+        .attr("class", "creature_histo")
+        .attr("width", "250")
+        .attr("height", "250");
+}
+
+function createBaseHistogram()
+{
+    var histogramsvg = d3.select("#histogram_svg");
+    var histoParent = d3.select(histogramsvg.node().parentElement);
+    var width = histogramsvg.attr("width");
+    var height = histogramsvg.attr("height");
+    return makeHisto(histoParent,  histogramsvg);
+}
 
 function updateSelectedSets()
 {
@@ -33,78 +71,19 @@ function updateSelectedSets()
 function updatePredationFilter()
 {
     this.predation_filter = [this.powerTough.getPower(), this.powerTough.getToughness()];
-    // this.splitData = this.data.getColorPredationSplitTable(
-    //         this.powerTough.getPower(),
-    //         this.powerTough.getToughness());
 }
 
 function redraw()
 {
-    histogram.data(this.data);
-    histogram.predation_filter(this.predation_filter);
-    histogram.render();
+    mainHistogram.data(this.data);
+    mainHistogram.predation_filter(this.predation_filter);
+    mainHistogram.render();
 }
 
 function OnSetsChange()
 {
-    // populateCreatureComboBox(CardQuery(this.setSelector.getSelectedCards()));
     updateSelectedSets();
     updatePredationFilter();
     this.powerTough.update(this.data.cards);
     redraw();
 }
-
-
-
-
-// //Callbacks for the HTML page
-// function onSelectedCardChange() {
-//     var currentName = this.CreatureSelector.options[this.CreatureSelector.selectedIndex].text;
-
-//     //Pega o primeiro card da listagem com aquele nome
-//     selectedCard = this.creatureCards.getCardWithName(currentName);
-//     this.powerfield.attr("value", selectedCard.power);
-//     this.powerfield.val = selectedCard.power;
-//     this.toughnessfield.attr("value", selectedCard.toughness);
-//     this.toughnessfield.val = selectedCard.toughness;
-// }
-
-// //Initialization Functions
-// function populateCreatureComboBox(cardQuery) {
-//     creatureSelector = document.getElementById("select");
-
-//     //Pegando os nomes para ordenar
-//     var names = [];
-//     var creatureCards = cardQuery.cards;
-//     creatureCards.forEach(function (card) {
-//         names.push(card.name);
-//     });
-
-//     names.sort();
-//     var option = document.createElement("option");
-//     names.forEach(function (name) {
-//         option = document.createElement("option");
-//         option.text = name;
-//         creatureSelector.add(option);
-//     });
-
-//     creatureSelector.selectedIndex = -1;
-//     return creatureSelector;
-// }
-
-
-// function setupPowToughFields()
-// {
-//     this.powerfield = d3.select("#powerfield");
-//     this.toughnessfield = d3.select("#toughnessfield");
-//     this.powerfield.on("input", function()
-//         {
-//             powerfield.attr("value", this.value);
-//             updateBars();
-//         });
-//     this.toughnessfield.on("input", function()
-//         {
-//             toughnessfield.attr("value", this.value);
-//             updateBars();
-//         });
-// }
