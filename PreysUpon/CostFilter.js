@@ -7,7 +7,7 @@ function CostFilter(origin, updateCallback, range, id)
 		// <div class="col-sm-10 offset-2">
 		// 		<input id="ex1" data-provide="slider" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="[0, 10]"/>
 		// 	</div>
-		selections = range;
+		this.selections = range;
 
 		var div = origin.append("div").attr("claa", "row");
 		div.append("b").text(range[0]).attr("class", "col-sm-2");

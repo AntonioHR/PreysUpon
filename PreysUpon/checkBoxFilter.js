@@ -2,6 +2,7 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 {
 	if(!nameFunction)
 		nameFunction = function(d){return d;};
+	var selections = [];
 	init();
 
 	function init()
