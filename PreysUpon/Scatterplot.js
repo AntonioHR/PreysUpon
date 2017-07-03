@@ -18,7 +18,9 @@ function makeScatterplot(svg) {
 	}
 
 	var update = function data(newData) {
+		voltar();
 		dataset = newData;
+
 
 		//setup x
 		var xValue = function(d) { 
@@ -109,24 +111,22 @@ function makeScatterplot(svg) {
 			return (card.power == d.power && card.toughness == d.toughness);
 		});
 		
+		d3.select("#selectCreature").property("value", d.name).on("change")();
 
 		var imageUrl = function (d) {
 			return "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid="+d.multiverseid+"&type=card";
 		}
 		var cards_images = d3.select("#cards_images");
 		cards_images.selectAll(".card_image").data(selectedCards)
-			.enter().append("a")
-				.attr("href", "#histogram_svg")
+			.enter().append("img")
 				.attr("class", "card_image")
-			.append("img")
 				.attr("src", imageUrl)
-				.style("margin-right", "5px")
-				.on("click", function(d,i){
-					d3.select("#selectCreature").property("value", d.name).on("change")();
-				});
+				.style("margin-right", "5px");
 
 		var t = d3.transition()
 			.duration(750);
+		d3.select("#histogram_svg").transition(t)
+			.style("display", "inline");
 		d3.select("#scatterplot_svg").transition(t)
 			.attr("class", "animated slideOutLeft")
 			.style("opacity", "0");
@@ -134,15 +134,22 @@ function makeScatterplot(svg) {
 			.style("opacity", "100")
 			.attr("class", "animated slideInRight");
 			
-		d3.select("#voltar_scatterplot").on("click", function(){
-			d3.selectAll(".card_image").remove();
-			d3.select("#scatterplot_svg").transition(t)
-				.attr("class", "animated slideInLeft")
-				.style("opacity", "100");
-			d3.select("#selected_cards").transition(t)
-				.style("opacity", "0")
-				.attr("class", "animated slideOutRight");
-		});
+		d3.select("#voltar_scatterplot").on("click", voltar);
+	}
+
+	function voltar () {
+		var t = d3.transition()
+			.duration(750);
+
+		d3.select("#histogram_svg").transition(t)
+			.style("display", "none");
+		d3.selectAll(".card_image").remove();
+		d3.select("#scatterplot_svg").transition(t)
+			.attr("class", "animated slideInLeft")
+			.style("opacity", "100");
+		d3.select("#selected_cards").transition(t)
+			.style("opacity", "0")
+			.attr("class", "animated slideOutRight");
 	}
 
 	return {
