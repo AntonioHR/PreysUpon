@@ -11,7 +11,7 @@ var init = function () {
     this.mainHistogram = makeHisto(mainHistoOrigin, mainHistoSVG);
 
     var histos_origin = d3.select("#histograms-origin");
-    var histos = []
+    histos = [];
 
 
     this.powerTough = powerToughnessSelector(
@@ -27,13 +27,26 @@ var init = function () {
         powerToughBtn.on("click", function()
         {
             console.log("clicked add");
-            var histo_svg = createHistogramSlot(histos_origin);
+            var result = createHistogramSlot(histos_origin);
+            var histo_svg = result.svg;
             var histo_origin = d3.select(histo_svg.node().parentElement);
             var newHisto = makeHisto(histo_origin, histo_svg);
             histos.push(newHisto);
+
+            result.button.on("click", function()
+            {
+                result.well.remove();
+                removeHisto(newHisto);
+                console.log(histos);
+            });
             redraw(newHisto);
         });
 };
+
+function removeHisto(histo)
+{
+    histos.splice(histos.indexOf(histo), 1);
+}
 
 function createHistogramSlot(origin)
 {
@@ -46,19 +59,25 @@ function createHistogramSlot(origin)
     //         </div>
     //     </div>
     // </div>
-
-    var div = origin
-                .append("div").attr("class", "col-sm-6")
-                    .append("div").attr("class", "well")
-                        .append("div").attr("class", "row");
-
-    div.append("button").attr("class", "close glyphicon glyphicon-remove float-right");
+    var well = origin.append("div").attr("class", "col-sm-6");
+    var div = well
+                .append("div").attr("class", "well")
+                    .append("div").attr("class", "row");
 
 
-    return div.append("svg")
+    var button = div.append("button")
+        .attr("class", "close glyphicon glyphicon-remove float-right")
+
+    var svg = div.append("svg")
         .attr("class", "creature_histo")
         .attr("width", "250")
         .attr("height", "250");
+
+    return {
+        svg: svg,
+        button: button,
+        well: well
+    };
 }
 
 function updateSelectedSets()

@@ -241,6 +241,7 @@ function makeHisto(parent, svg){
 		render:render,
 		predation_filter: predation_filter,
 		data: data,
-		rarity_filter: rarity_filter
+		rarity_filter: rarity_filter,
+		parent: parent
 	};
 }
