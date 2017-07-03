@@ -4,6 +4,7 @@
 
 	<head>
 		<title>PreysUpon</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 		<script src="https://d3js.org/d3.v4.min.js"></script>	
 		<script type="text/javascript" src="AllSets.json"></script>
 		<script type="text/javascript" src="CardQuery.js"></script>
@@ -48,7 +49,7 @@
 		<div id="top">
 		  	<div>
 				<label for="selectCreature" >Creature</label>
-				<select id="selectCreature"> </select>
+				<select id="selectCreature" name="selectCreature"> </select>
 			</div>
 			<div>
 				<label for="powerfield" >Power</label>
@@ -66,7 +67,14 @@
             </div>
             <div>
             	<h1>scatterplot</h1>
-            	<svg id="scatterplot_svg" width="500" height="500"></svg>
+            	<div style="position:relative">
+            		<svg id="scatterplot_svg" width="500" height="500"></svg>
+            		<div id="selected_cards" style="opacity:0;position:absolute;top:0;left:350px">
+            			<button id="voltar_scatterplot">Voltar</button>
+            			<div id="cards_images" style="overflow:scroll;white-space:nowrap">
+            			</div>
+            		</div>
+            	</div>
             </div>
             <div class="two">
                 <svg id="histogram_svg" width="500" height="500"></svg>

@@ -6,52 +6,55 @@ function makeScatterplot(svg) {
 		g = svg.append("g").attr("transform", translate(margin.left, margin.top)),
 		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare", "Special"];
 
+	var cValue = function(d) { return d.rarity; },
+			colorsRarity = d3.scaleOrdinal()
+				.range(["#GGGGGG", "#7a7a7a", "#efc323", "#d33d02", "#6e04cc"])
+				.domain(rarities);
+
+	var dataset = null;
 
 	function translate (x,y) {
 		return "translate("+x+","+y+")";
 	}
 
 	var update = function data(newData) {
+		dataset = newData;
 
 		//setup x
 		var xValue = function(d) { 
-				if (isNaN(d.power)) {
-					return 0;
-				} else {
-					return d.power;
-				}
-			},
-			//xScale = d3.scaleLinear().range([0,width]),
-			xScale = d3.scaleLinear().domain([d3.min(newData, xValue), d3.max(newData, xValue)]).range([0,width]),
-			xMap = function (d) { return xScale(xValue(d)); },
-			xAxis = d3.axisBottom(xScale);
-
-		var yValue = function(d) { 
 				if (isNaN(d.toughness)) {
 					return 0;
 				} else {
 					return d.toughness;
 				}
 			},
+			//xScale = d3.scaleLinear().range([0,width]),
+			xScale = d3.scaleLinear().domain([d3.min(newData, xValue), d3.max(newData, xValue)]).range([0,width]).nice(),
+			xMap = function (d) { return xScale(xValue(d)); },
+			xAxis = d3.axisBottom(xScale);
+
+		var yValue = function(d) { 
+				if (isNaN(d.power)) {
+					return 0;
+				} else {
+					return d.power;
+				}
+			},
 			//yScale = d3.scaleLinear().range([0, height]),
-			yScale = d3.scaleLinear().domain([d3.min(newData, yValue), d3.max(newData, yValue)]).range([height, 0]),
+			yScale = d3.scaleLinear().domain([d3.min(newData, yValue), d3.max(newData, yValue)]).range([height, 0]).nice(),
 			yMap = function(d) { return yScale(yValue(d)); },
 			yAxis = d3.axisLeft(yScale);
-
-		var cValue = function(d) { return d.rarity; },
-			colorsRarity = d3.scaleOrdinal()
-				.range(["#GGGGGG", "#7a7a7a", "#efc323", "#d33d02", "#6e04cc"])
-				.domain(rarities);
 
 		var t = d3.transition()
 			.duration(750);
 
 		var max = d3.max(newData, xValue);
-		console.log(max);
 		xScale.domain([d3.min(newData, xValue)-1, max]);
 		yScale.domain([d3.min(newData, yValue)-1, max]);
 
 		d3.selectAll("#scatterplot_axesParent").remove();
+		d3.selectAll(".dot").remove();
+
 		var scatterplot_axesParent = g.append("g").attr("id", "scatterplot_axesParent");
 		 // x-axis
 		 var xAxisGroup = scatterplot_axesParent.append("g")
@@ -84,7 +87,62 @@ function makeScatterplot(svg) {
 		  	.attr("r", 4)
 		  	.attr("cx", xMap)
 		  	.attr("cy", yMap)
-		  	.style("fill", function(d) { return colorsRarity(cValue(d));});
+		  	.style("fill", function(d) { return colorsRarity(cValue(d));})
+		  	.on("mouseover", onMouseOver)
+      		.on("mouseout", onMouseOut)
+      		.on("click", onClick);
+	}
+
+	function onMouseOver (d, i) {
+		var circle = d3.select(this);
+		circle.style("cursor", "pointer");
+	}
+
+	function onMouseOut(d,i) {
+		var circle = d3.select(this);
+		circle.style("cursor", "normal");
+	}
+
+	function onClick(d,i) {
+		//http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=501&type=card
+		var selectedCards = dataset.filter(function(card){
+			return (card.power == d.power && card.toughness == d.toughness);
+		});
+		
+
+		var imageUrl = function (d) {
+			return "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid="+d.multiverseid+"&type=card";
+		}
+		var cards_images = d3.select("#cards_images");
+		cards_images.selectAll(".card_image").data(selectedCards)
+			.enter().append("a")
+				.attr("href", "#histogram_svg")
+				.attr("class", "card_image")
+			.append("img")
+				.attr("src", imageUrl)
+				.style("margin-right", "5px")
+				.on("click", function(d,i){
+					d3.select("#selectCreature").property("value", d.name).on("change")();
+				});
+
+		var t = d3.transition()
+			.duration(750);
+		d3.select("#scatterplot_svg").transition(t)
+			.attr("class", "animated slideOutLeft")
+			.style("opacity", "0");
+		d3.select("#selected_cards").transition(t)
+			.style("opacity", "100")
+			.attr("class", "animated slideInRight");
+			
+		d3.select("#voltar_scatterplot").on("click", function(){
+			d3.selectAll(".card_image").remove();
+			d3.select("#scatterplot_svg").transition(t)
+				.attr("class", "animated slideInLeft")
+				.style("opacity", "100");
+			d3.select("#selected_cards").transition(t)
+				.style("opacity", "0")
+				.attr("class", "animated slideOutRight");
+		});
 	}
 
 	return {

@@ -20,7 +20,8 @@ function powerToughnessSelector(selector, powerField, toughnessField, updateCall
 		options.exit().remove();
 		var newOptions = options.enter().append("option");
 		var total = newOptions.merge(options)
-			.text(function(d){return d.name;});
+			.text(function(d){return d.name;})
+			.attr("value", function(d){return d.name;});
 
 		onChangeCeature();
 	}

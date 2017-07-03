@@ -11,6 +11,9 @@ var init = function () {
     var height = histogramsvg.attr("height");
     this.histogram = makeHisto(histogramsvg);
 
+    var scatterplotsvg = d3.select("#scatterplot_svg");
+    this.scatterplot = makeScatterplot(scatterplotsvg);
+
     this.powerTough = powerToughnessSelector(
         d3.select("#selectCreature"),
         d3.select("#powerfield"),
@@ -19,6 +22,7 @@ var init = function () {
         {
             updatePreyFilters();
             redraw();
+            redraw_scatterplot();
         });
 
     // this.creatureCards = ParseCreaturesFromAllCards(cardsMTG);
@@ -41,6 +45,11 @@ function redraw()
     histogram.update(this.splitData);
 }
 
+function redraw_scatterplot ()
+{
+    scatterplot.update(this.data.cards);
+}
+
 function OnSetsChange()
 {
     // populateCreatureComboBox(CardQuery(this.setSelector.getSelectedCards()));
@@ -48,6 +57,7 @@ function OnSetsChange()
     updatePreyFilters();
     this.powerTough.update(this.data.cards);
     redraw();
+    redraw_scatterplot();
 }
 
 
