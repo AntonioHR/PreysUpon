@@ -33,6 +33,10 @@ div.tooltip {
       color: #f4511e;
       font-size: 200px;
 }
+
+.histo_title {
+  text-align: center;
+}
 /*
 .check-common .btn-primary{
     background-color: #000000;	

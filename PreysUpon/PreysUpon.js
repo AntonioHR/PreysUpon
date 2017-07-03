@@ -38,7 +38,13 @@ function addHisto()
     var result = createHistogramSlot(histos_origin);
     var histo_svg = result.svg;
     var histo_origin = d3.select(histo_svg.node().parentElement);
-    var newHisto = makeHisto(histo_origin, histo_svg);
+
+
+    var rarity_filter = this.mainHistogram.rarity_filter();
+    // var predation_filter = this.mainHistogram.predation_filter();
+    var predation_filter = null;
+
+    var newHisto = makeHisto(histo_origin, histo_svg, result.title, rarity_filter, predation_filter);
     histos.push(newHisto);
 
     result.button.on("click", function()
@@ -49,7 +55,7 @@ function addHisto()
     });
     redraw(newHisto);
 
-    if(histos.length == 2)
+    if(histos.length >= 2)
     {
         var q0 = histos[0].query();
         var q1 = histos[1].query();
@@ -59,6 +65,9 @@ function addHisto()
         var table1 = q1.data.getPredationColorSplit(q1.pow, q1.tough);
         var qs = [table0, table1];
         comparer.updateQueries(qs);
+    } else
+    {
+
     }
 }
 
@@ -94,9 +103,15 @@ function createHistogramSlot(origin)
                 .append("div").attr("class", "well")
                     .append("div").attr("class", "row");
 
-
     var button = div.append("button")
-        .attr("class", "close glyphicon glyphicon-remove float-right")
+        .attr("class", "close glyphicon glyphicon-remove float-right");
+
+        
+
+    title = div.append("h5")
+        .attr("class", "histo_title")
+        .text("2/3");
+
 
     var svg = div.append("svg")
         .attr("class", "creature_histo")
@@ -106,6 +121,7 @@ function createHistogramSlot(origin)
     return {
         svg: svg,
         button: button,
+        title: title,
         well: well
     };
 }

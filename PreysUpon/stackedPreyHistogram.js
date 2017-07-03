@@ -1,6 +1,6 @@
 var check = checkBoxFilter;
 
-function makeHisto(parent, svg){
+function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start){
 	if(!svg)
 	{
 		svg = parent.append("svg")
@@ -18,9 +18,9 @@ function makeHisto(parent, svg){
 		base_count = 40;
 
 	//Filters
-		var _rarity_filter = rarities,
-			_predation_filter = [-99, -99],
-			_cost_filter = [0, 100];
+	var _rarity_filter = rarity_filter_start? rarity_filter_start: rarities,
+		_predation_filter =  [-99, -99],
+		_cost_filter = cost_filter_start? cost_filter_start:[0, 100];
 
 	var x = d3.scaleBand()
 		.rangeRound([0, width])
@@ -39,6 +39,7 @@ function makeHisto(parent, svg){
 		.domain(rarities);
 
 
+
 	var tooltipDiv = d3.select("body").append("div")
 		.attr("class", "tooltip");
 
@@ -46,15 +47,15 @@ function makeHisto(parent, svg){
 
 
 	var checkboxDiv = parent.append("form");
-	var rarities_filter = rarities;
+	// var rarities_filter = rarities;
 	var rarityCheckboxFilter = check(checkboxDiv,
 		function(newFilters)
 		{
-			_rarities_filter = newFilters;
+			_rarity_filter = newFilters;
 			console.log(_rarity_filter);
 			render();
 		});
-	rarityCheckboxFilter.update(rarities);
+	rarityCheckboxFilter.update(rarities, rarity_filter_start);
 
 	var costFilterDiv = parent.append("div").attr("class", "col-sm-6 offset-2");
 	var costSliderFilter = CostFilter(costFilterDiv, function(range, isOnEdges)
@@ -73,7 +74,7 @@ function makeHisto(parent, svg){
 	var data = function(value)
 	{
 		if(!value)
-			return _full_data;
+			return _full_data.slice();
 		else
 		{
 			_full_data = value;
@@ -85,7 +86,7 @@ function makeHisto(parent, svg){
 	{
 		if(!value)
 		{
-			return value;
+			return _rarity_filter.slice();
 		} else
 		{
 			_rarity_filter = value;
@@ -97,7 +98,7 @@ function makeHisto(parent, svg){
 	{
 		if(!value)
 		{
-			return value;
+			return _predation_filter.slice();
 		} else
 		{
 			_predation_filter = value;
@@ -152,6 +153,11 @@ function makeHisto(parent, svg){
 
 		parent.selectAll(".legendParent").remove();
 		parent.selectAll(".axesParent").remove();
+
+		if(title)
+		{
+			title.text("Power: " + _predation_filter[0] + " Toughness: " + _predation_filter[1]);
+		}
 
 		var elements =  g.selectAll(".bar").data(dataStacks);
 		elements.exit().remove();

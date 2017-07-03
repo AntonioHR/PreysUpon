@@ -22,8 +22,12 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 			selections.splice(index, 1);
 	}
 
-	function update(newData){
-		selections = newData;
+	function update(newData, checked){
+		if(!checked)
+			selections = newData;
+		else
+			selections = checked;
+
 		var elements = origin.selectAll("div")
 			.data(newData);
 
@@ -35,11 +39,16 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 
 		var totalElements = newElements.merge(elements);
 
-
-
 		newElements.append("input")
 			.attr("type", "checkbox")
-			.attr("checked", true);
+			.each(function(d)
+			{
+				setChecked(this, d);
+				// if(c.indexOf(d) != -1)
+				// 	d3.select(this).attr("checked", true);
+			});
+			// .attr("checked", function(d){return checked? (checked.indexOf(d) != -1?1:0) : 1;});
+			// .attr("checked", 0);
 
 		totalElements.selectAll("input")
 			.datum(function(d){return d;})
@@ -61,6 +70,13 @@ function checkBoxFilter(origin, updateCallback, nameFunction)
 			});
 	}
 
+
+	function setChecked(obj, val)
+	{
+
+		if(selections.indexOf(val) != -1)
+			d3.select(obj).attr("checked", true);
+	}
 	function getSelections()
 	{
 		return selections;
