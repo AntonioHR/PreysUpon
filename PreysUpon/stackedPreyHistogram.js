@@ -105,6 +105,20 @@ function makeHisto(parent, svg){
 		return this;
 	};
 
+	var currentQuery = function()
+	{
+		var filtered_data = _full_data;
+
+		filtered_data = filtered_data.getAllInRarities(_rarity_filter);
+		filtered_data = filtered_data.getAllWithCostBetween(_cost_filter);
+
+		return {
+			data:filtered_data,
+			pow:_predation_filter[0],
+			tough:_predation_filter[1]
+		};
+	};
+
 	var render = function ()
 	{
 
@@ -242,6 +256,7 @@ function makeHisto(parent, svg){
 		predation_filter: predation_filter,
 		data: data,
 		rarity_filter: rarity_filter,
-		parent: parent
+		parent: parent,
+		query: currentQuery
 	};
 }

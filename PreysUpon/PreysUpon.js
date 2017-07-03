@@ -10,7 +10,7 @@ var init = function () {
     var mainHistoOrigin = d3.select(mainHistoSVG.node().parentElement);
     this.mainHistogram = makeHisto(mainHistoOrigin, mainHistoSVG);
 
-    var histos_origin = d3.select("#histograms-origin");
+    histos_origin = d3.select("#histograms-origin");
     histos = [];
 
 
@@ -26,26 +26,56 @@ var init = function () {
     this.powerToughBtn = d3.select("#button-creature-add");
         powerToughBtn.on("click", function()
         {
-            console.log("clicked add");
-            var result = createHistogramSlot(histos_origin);
-            var histo_svg = result.svg;
-            var histo_origin = d3.select(histo_svg.node().parentElement);
-            var newHisto = makeHisto(histo_origin, histo_svg);
-            histos.push(newHisto);
-
-            result.button.on("click", function()
-            {
-                result.well.remove();
-                removeHisto(newHisto);
-                console.log(histos);
-            });
-            redraw(newHisto);
+           addHisto();
         });
+
+    comparer = createComparer();
 };
+
+function addHisto()
+{
+     console.log("clicked add");
+    var result = createHistogramSlot(histos_origin);
+    var histo_svg = result.svg;
+    var histo_origin = d3.select(histo_svg.node().parentElement);
+    var newHisto = makeHisto(histo_origin, histo_svg);
+    histos.push(newHisto);
+
+    result.button.on("click", function()
+    {
+        result.well.remove();
+        removeHisto(newHisto);
+        console.log(histos);
+    });
+    redraw(newHisto);
+
+    if(histos.length == 2)
+    {
+        var q0 = histos[0].query();
+        var q1 = histos[1].query();
+
+
+        var table0 = q0.data.getPredationColorSplit(q0.pow, q0.tough);
+        var table1 = q1.data.getPredationColorSplit(q1.pow, q1.tough);
+        var qs = [table0, table1];
+        comparer.updateQueries(qs);
+    }
+}
 
 function removeHisto(histo)
 {
     histos.splice(histos.indexOf(histo), 1);
+}
+
+function createComparer()
+{
+
+    // <div class="well" id="comparer_root">
+    //     <svg id="comparer_svg" width="300" height="300"></svg>
+    var heatmapParent = d3.select("#comparer_root");
+    var svg = d3.select("#comparer_svg");
+    var legend_svg = d3.select("#comparer_legend_svg");
+    return ComparerHeatMap(heatmapParent, svg, legend_svg);
 }
 
 function createHistogramSlot(origin)

@@ -13,7 +13,8 @@
 	<script type="text/javascript" src="checkBoxFilter.js"></script>
 	<script type="text/javascript" src="CostFilter.js"></script>
 	<script type="text/javascript" src="stackedPreyHistogram.js"></script>
-	<script type="text/javascript" src="ComparativeHistograms.js"></script>
+	<!--<script type="text/javascript" src="ComparativeHistograms.js"></script>-->
+	<script type="text/javascript" src="ComparerHeatMap.js"></script>
 	<script type="text/javascript" src="PreysUpon.js"></script>
 
 
@@ -64,10 +65,10 @@
 
 
 			<!-- Meio -->
-			<div class="col-md-8"> 
+			<div class="col-md-9"> 
 				<!-- Formulario de filtro de criatura -->
 				<div class="row">
-					<div class="col-sm-12 well"> 
+					<div class="col-sm-8 well"> 
 						<form class="form-inline">
 							<div class="form-group">
 								<label for="selectCreature" >Creature</label>
@@ -98,15 +99,16 @@
 				</div>
 
 				<div class="row">
-					<div class="col-sm-9"> 
+					<div class="col-sm-8"> 
 						<div class="row" id="histograms-origin">
-							<!-- <div class="col-sm-6">
-								
-							</div> -->
 						</div>
 					</div>
-					<div class="col-sm-3"> 
-						<div class="well"></div>
+					<!-- Comparer -->
+					<div class="col-sm-4 well" id="comparer_root"> 
+						<!-- <div class="well" id="comparer_root"> -->
+							<svg id="comparer_svg" width="300" height="200"></svg>
+							<svg id="comparer_legend_svg" width="300" height="50"></svg>
+						<!-- </div> -->
 					</div>
 				</div>
 			</div>

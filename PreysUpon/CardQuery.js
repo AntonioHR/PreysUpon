@@ -44,6 +44,7 @@ var CardQuery = (function(Cards)
 		return result;
 	}
 
+
 	function getColorPredationSplit(pow, tough)
 	{
 		var result =
@@ -58,6 +59,16 @@ var CardQuery = (function(Cards)
 		return result;
 	}
 
+	function getPredationColorSplit(pow, tough)
+	{
+		var result = [];
+
+		result["Prey"] = getAllPrey(pow, tough).getColorGroupSplit();
+		result["BounceOff"] = getAllBounceOff(pow, tough).getColorGroupSplit();
+		result["Trade"] = getAllTrades(pow, tough).getColorGroupSplit();
+		result["Predator"] = getAllPredators(pow, tough).getColorGroupSplit();
+		return result;
+	}
 
 	function getColorPredationSplitTable(pow, tough)
 	{
@@ -100,7 +111,6 @@ var CardQuery = (function(Cards)
 		result.push(Predator);
 		return result;
 	}
-
 
 	function getPredationSplit(pow, tough)
 	{
@@ -198,6 +208,7 @@ var CardQuery = (function(Cards)
 		getCardWithName: getCardWithName,
 		getColorGroupSplit: getColorGroupSplit,
 		getColorPredationSplit: getColorPredationSplit,
+		getPredationColorSplit: getPredationColorSplit,
 		getColorPredationSplitTable: getColorPredationSplitTable,
 		getPredationColorSplitTable: getPredationColorSplitTable,
 		getPredationSplit: getPredationSplit,
