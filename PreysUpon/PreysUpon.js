@@ -85,10 +85,11 @@ function updateComparer(histo1, histo2)
     var q1 = histo2.histo.query();
 
 
-    var table0 = q0.data.getPredationColorSplit(q0.pow, q0.tough);
-    var table1 = q1.data.getPredationColorSplit(q1.pow, q1.tough);
-    var qs = [table0, table1];
-    comparer.updateQueries(qs);
+    // var table0 = q0.data.getPredationColorSplit(q0.pow, q0.tough);
+    // var table1 = q1.data.getPredationColorSplit(q1.pow, q1.tough);
+    // var qs = [table0, table1];
+    // comparer.updateQueries(qs);
+    comparer.updateQueries([q0, q1]);
 }
 
 function removeHisto(histo_data)
