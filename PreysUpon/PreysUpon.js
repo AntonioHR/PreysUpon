@@ -11,8 +11,8 @@ var init = function () {
     this.mainHistogram = makeHisto(mainHistoOrigin, mainHistoSVG);
 
     histos_origin = d3.select("#histograms-origin");
-    histos = [];
-
+    histos_data = [];
+    histo_selections = [];
 
     this.powerTough = powerToughnessSelector(
         d3.select("#selectCreature"),
@@ -34,7 +34,7 @@ var init = function () {
 
 function addHisto()
 {
-     console.log("clicked add");
+    console.log("clicked add");
     var result = createHistogramSlot(histos_origin);
     var histo_svg = result.svg;
     var histo_origin = d3.select(histo_svg.node().parentElement);
@@ -45,35 +45,58 @@ function addHisto()
     var predation_filter = null;
 
     var newHisto = makeHisto(histo_origin, histo_svg, result.title, rarity_filter, predation_filter);
-    histos.push(newHisto);
+
+    var new_histo_data = {histo: newHisto, lock: result.lock, well: result.well};
+    histos_data.push(new_histo_data);
 
     result.button.on("click", function()
     {
-        result.well.remove();
-        removeHisto(newHisto);
-        console.log(histos);
+        result.origin.remove();
+        removeHisto(new_histo_data);
+        console.log(histos_data);
     });
+
+    result.lock
+        // .on("mouseover", function()
+        // {
+        //     d3.select(this).classed("current_hovered_histo", true);
+        // })
+        // .on("mouseout", function()
+        // {
+        //     d3.select(this).classed("current_hovered_histo", false);
+        // })
+        .on("click", function()
+        {
+            toggleHisto(new_histo_data);
+        });
+
     redraw(newHisto);
 
-    if(histos.length >= 2)
+    if(histos_data.length <= 2)
     {
-        var q0 = histos[0].query();
-        var q1 = histos[1].query();
-
-
-        var table0 = q0.data.getPredationColorSplit(q0.pow, q0.tough);
-        var table1 = q1.data.getPredationColorSplit(q1.pow, q1.tough);
-        var qs = [table0, table1];
-        comparer.updateQueries(qs);
-    } else
-    {
-
+        toggleHisto(new_histo_data);
     }
 }
 
-function removeHisto(histo)
+function updateComparer(histo1, histo2)
 {
-    histos.splice(histos.indexOf(histo), 1);
+    var q0 = histo1.histo.query();
+    var q1 = histo2.histo.query();
+
+
+    var table0 = q0.data.getPredationColorSplit(q0.pow, q0.tough);
+    var table1 = q1.data.getPredationColorSplit(q1.pow, q1.tough);
+    var qs = [table0, table1];
+    comparer.updateQueries(qs);
+}
+
+function removeHisto(histo_data)
+{
+    if(histo_selections.indexOf(histo_data) != -1)
+    {
+        toggleHisto(histo_data);
+    }
+    histos_data.splice(histos_data.indexOf(histo_data), 1);
 }
 
 function createComparer()
@@ -98,15 +121,16 @@ function createHistogramSlot(origin)
     //         </div>
     //     </div>
     // </div>
-    var well = origin.append("div").attr("class", "col-sm-6");
-    var div = well
-                .append("div").attr("class", "well")
-                    .append("div").attr("class", "row");
+    var well_holder = origin.append("div").attr("class", "col-sm-6");
+
+    var well = well_holder.append("div").attr("class", "well");
+
+    var div = well.append("div").attr("class", "row");
 
     var button = div.append("button")
         .attr("class", "close glyphicon glyphicon-remove float-right");
-
-        
+    var button_lock = div.append("button")
+        .attr("class", "btn glyphicon glyphicon-lock float-right");
 
     title = div.append("h5")
         .attr("class", "histo_title")
@@ -122,8 +146,56 @@ function createHistogramSlot(origin)
         svg: svg,
         button: button,
         title: title,
-        well: well
+        origin: well_holder,
+        well: well,
+        lock: button_lock
     };
+}
+
+function toggleHisto(histo_data)
+{
+    if(histo_selections.indexOf(histo_data) != -1)
+    {
+        deselectHisto(histo_data);
+        histo_selections[0].well.classed("current_histo_a", true);
+        histo_selections[0].well.classed("current_histo_b", false);
+    } else {
+        if(histo_selections.length == 2)
+        {
+            var second = histo_selections[1];
+            deselectHisto(histo_selections[0]);
+
+            second.well.classed("current_histo_a", true);
+            second.well.classed("current_histo_b", false);
+        }
+        selectHisto(histo_data);
+    }
+    if(histo_selections.length == 2)
+    {
+        updateComparer(histo_selections[0], histo_selections[1]);
+    } else {
+        comparer.clear();
+    }
+}
+
+
+
+function selectHisto(histo_data)
+{
+    histo_selections.push(histo_data);
+    if(histo_selections.length == 1)
+    {
+        histo_data.well.classed("current_histo_a", true);
+    } else {
+        histo_data.well.classed("current_histo_b", true);
+    }
+}
+
+function deselectHisto(histo_data)
+{
+    histo_selections.splice(histo_selections.indexOf(histo_data), 1);
+    histo_data.well.classed("current_histo_a", false);
+    histo_data.well.classed("current_histo_b", false);
 }
 
 function updateSelectedSets()

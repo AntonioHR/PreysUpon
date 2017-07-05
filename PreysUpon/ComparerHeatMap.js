@@ -31,6 +31,11 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 		buildMatrix(joinedQuery);
 	};
 
+	result.clear = function clear()
+	{
+		svg.selectAll("*").remove();
+	}
+
 	function buildMatrix(joinedQuery)
 	{
 		// console.log(joinedQuery[0]);
@@ -47,7 +52,7 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 		var emptyColor = "black";
 		var scaleColor = d3.scaleLinear()
 			.domain([-10, 0, 10])
-			.range(["green", "gray", "blue"]);
+			.range(["#E03019", "gray", "#86CE17"]);
 
 		for (var i = 0; i < this.predationKeys.length; i++) {
 			var columns = svg.append("g").attr("class", "column")
@@ -112,11 +117,11 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 		},
 		{
 			type: "Esquerda",
-			color: "blue"
+			color: "#922C42"
 		},
 		{
 			type: "Direita",
-			color: "green"
+			color: "#48266B"
 		}
 	]	
 	}

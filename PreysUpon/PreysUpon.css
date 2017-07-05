@@ -37,6 +37,23 @@ div.tooltip {
 .histo_title {
   text-align: center;
 }
+
+.current_hovered_histo
+{
+  border: 1px solid #000000;
+}
+
+.current_histo_a
+{
+  /*green*/
+  background-color: #C8F485;
+}
+
+.current_histo_b
+{
+  /*red*/
+  background-color: #FF988A;
+}
 /*
 .check-common .btn-primary{
     background-color: #000000;	
