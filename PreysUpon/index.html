@@ -65,11 +65,11 @@
 
 
 			<!-- Meio -->
-			<div class="col-md-9"> 
+			<div class="col-md-6"> 
 				<!-- Formulario de filtro de criatura -->
 				<div class="row">
-					<div class="col-sm-8 well"> 
-						<form class="form-inline">
+					<div > 
+						<form class="form-inline well">
 							<div class="form-group">
 								<label for="selectCreature" >Creature</label>
 								<select id="selectCreature" class="form-control"> 
@@ -99,48 +99,28 @@
 				</div>
 
 				<div class="row">
-					<div class="col-sm-8"> 
+					<div> 
 						<div class="row" id="histograms-origin">
 						</div>
 					</div>
-					<!-- Comparer -->
-					<div class="col-sm-4 well" id="comparer_root"> 
-						<!-- <div class="well" id="comparer_root"> -->
-							<svg id="comparer_svg" width="300" height="200"></svg>
-							<svg id="comparer_legend_svg" width="300" height="50"></svg>
-						<!-- </div> -->
-					</div>
+				</div>
+			</div>
+
+
+			<div class="col-md-3"> 
+				<!-- Comparer -->
+				<div class="well" id="comparer_root"> 
+					<svg id="comparer_svg" width="300" height="200"></svg>
+					<!-- <svg id="comparer_legend_svg" width="300" height="50"></svg> -->
+				</div>
+				<!-- Comparer -->
+				<div class="well" id="comparer_root"> 
+					<svg id="comparer_svg" width="300" height="200"></svg>
+					<svg id="comparer_legend_svg" width="300" height="50"></svg>
 				</div>
 			</div>
 		</div>
 	</div>
-
-
-
-
-		<!-- <div id="top">
-		  	<div>
-				<label for="selectCreature" >Creature</label>
-				<select id="selectCreature"> </select>
-			</div>
-			<div>
-				<label for="powerfield" >Power</label>
-				<div><select id="powerfield"> </select></div>
-		  	</div>
-		  	<div>
-				<label for="toughnessfield" >Toughness</label>
-		  		<div><select id="toughnessfield"> </select></div>
-		  	</div>
-		</div>
-		<div class="container">
-            <div class="one">
-                <select id="selectSet"> </select>
-                <ul></ul>
-            </div>
-            <div class="two">
-                <svg id="histogram_svg" width="500" height="500"></svg>
-            </div>
-        </div> -->
 </body>
 
 </html>

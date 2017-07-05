@@ -45,14 +45,14 @@ div.tooltip {
 
 .current_histo_a
 {
-  /*green*/
-  background-color: #C8F485;
+  /*blue*/
+  background-color: #bbd4ff;
 }
 
 .current_histo_b
 {
-  /*red*/
-  background-color: #FF988A;
+  /*purple*/
+  background-color: #fcdaff;
 }
 /*
 .check-common .btn-primary{

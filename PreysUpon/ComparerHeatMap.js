@@ -5,7 +5,7 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 	height = svg.attr("height");
 
 	this.colorGroups = ["Blue", "White", "Green", "Black", "Red", "Multicolored", "Colorless"];
-	this.predationKeys = ["Predator", "BounceOff", "Trade", "Prey"];
+	this.predationKeys = [ "Prey", "BounceOff", "Trade", "Predator"];
 
 
 	var result ={
@@ -16,12 +16,6 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 
 	function init()
 	{
-		// svg.append("rect")
-		// 	.attr("width", width)
-		// 	.attr("height", height)
-		// 	.attr("color", "FF00FF");
-		buildLegendData();
-		buildLegend(legend_svg);
 	}
 
 	result.updateQueries = function udpateQueries(queries)
@@ -52,7 +46,7 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 		var emptyColor = "black";
 		var scaleColor = d3.scaleLinear()
 			.domain([-10, 0, 10])
-			.range(["#E03019", "gray", "#86CE17"]);
+			.range(["#ea00ff", "gray", "#4287ff"]);
 
 		for (var i = 0; i < this.predationKeys.length; i++) {
 			var columns = svg.append("g").attr("class", "column")
@@ -102,70 +96,6 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 			.attr("y", function(d, i) { return ( (i % 2 == 0)? 15 : (160) ) })
 			.attr("font-size", 10)
 			.text(function(d){return d; });
-	}
-
-	function buildLegendData()
-	{
-		this.subtitlesJson = [
-		{
-			type: "Vazios",
-			color: "black"
-		},
-		{
-			type: "Empate",
-			color: "gray"
-		},
-		{
-			type: "Esquerda",
-			color: "#922C42"
-		},
-		{
-			type: "Direita",
-			color: "#48266B"
-		}
-	]	
-	}
-
-	function buildLegend(legendParent)
-	{
-		legendParent.append("text")
-			.attr("dy", "1em")
-			.attr("font-weight", "bold")
-			.text("Legenda");
-
-		var subtitle = legendParent.append("g")
-			.attr("font-family", "sans-serif")
-			.attr("font-size", 10)
-			.attr("text-anchor", "end")
-				.selectAll("g")
-			.data(this.subtitlesJson)
-				.enter().append("g")
-			.attr("transform", function(d, i){return translate(0, (i % 2)*20 );});
-
-		subtitle.append("rect")
-			.attr("x", function(d, i){
-				if(i < 2){
-					return this.width / 2;
-				}else{
-					return this.width - 19;
-				}
-			}.bind(this))
-			.attr("width", 19)
-			.attr("height", 19)
-			.attr("fill", function(d){return d.color;});
-
-		subtitle.append("text")
-			.attr("x", function(d, i){
-				if(i < 2){
-					return this.width / 2;
-				}else{
-					return this.width - 19;
-				}
-			}.bind(this))
-			.attr("y", 9.5)
-			.attr("dy", "0.32em")
-			.attr("font-weight", "bold")
-			.text(function(d){return d.type;});
 	}
 
 	function joinQueries(queryA, queryB)
