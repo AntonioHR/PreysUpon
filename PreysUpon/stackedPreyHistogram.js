@@ -1,6 +1,6 @@
 var check = checkBoxFilter;
 
-function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start, filter_update_function){
+function makeHisto(parent, svg, mouse_over_function, mouse_out_function, title, rarity_filter_start, cost_filter_start, filter_update_function){
 	if(!svg)
 	{
 		svg = parent.append("svg")
@@ -180,8 +180,8 @@ function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start, f
 		var subNewElements = subElements.enter().append("rect")
 			.attr("y", height)
 			.attr("height", 0)
-			.on("mouseover", onMouseOver)
-			.on("mouseout", onMouseOut);
+			.on("mouseover", function(d){mouse_over_function(d.data[d.key]);})
+			.on("mouseout", function(d){mouse_out_function(d.data[d.key]);});
 
 		subNewElements.merge(subElements)
 			.attr("x", function(d){return x(d.data.key);})
@@ -231,36 +231,6 @@ function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start, f
 			.text(function(d){return d;});
 	};
 
-	function onMouseOver(d) {
-		tooltipDiv.transition()
-			.duration(200)
-			.style("opacity", 1)
-			.style("left", (d3.event.pageX) + "px")
-			.style("top", (d3.event.pageY - 28) + "px");
-
-		var data = d.data[d.key].cards;
-		data.sort(function(a, b)
-		{
-			var indexA = rarities.indexOf(a.rarity);
-			var indexB = rarities.indexOf(b.rarity);
-			return indexB - indexA;
-		});
-		var elements = tooltipDiv.select("ul").selectAll("li")
-			.data(data);
-
-		elements.exit().remove();
-
-		var newElements = elements.enter().append("li");
-
-		elements.merge(newElements)
-			.text(function(d){return d.cmc + "-" + d.name + "(" + d.power + "/" + d.toughness + ")";})
-			.style("color", function(d){return colorsRarity(d.rarity);});
-	}
-	function onMouseOut(d) {
-		tooltipDiv.transition()
-			.duration(500)
-			.style("opacity", 0);
-	}
 	return {
 		render:render,
 		predation_filter: predation_filter,

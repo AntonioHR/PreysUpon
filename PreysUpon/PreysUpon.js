@@ -6,9 +6,11 @@ var init = function () {
         setsFiltered,
         OnSetsChange);
 
+    this.tooltip = makeTooltip();
+
     var mainHistoSVG = d3.select("#histogram_svg");
     var mainHistoOrigin = d3.select(mainHistoSVG.node().parentElement);
-    this.mainHistogram = makeHisto(mainHistoOrigin, mainHistoSVG);
+    this.mainHistogram = makeHisto(mainHistoOrigin, mainHistoSVG, tooltip.show, tooltip.hide);
 
     histos_origin = d3.select("#histograms-origin");
     histos_data = [];
@@ -29,6 +31,7 @@ var init = function () {
            addHisto();
         });
 
+
     comparer = createComparer();
 };
 
@@ -44,8 +47,8 @@ function addHisto()
     // var predation_filter = this.mainHistogram.predation_filter();
     var predation_filter = null;
 
-    var newHisto = makeHisto(histo_origin, histo_svg, result.title, rarity_filter, predation_filter,
-        function(){onHistoUpdate()});
+    var newHisto = makeHisto(histo_origin, histo_svg, tooltip.show, tooltip.hide, result.title, rarity_filter, predation_filter,
+        function(){onHistoUpdate();});
 
     var new_histo_data = {histo: newHisto, lock: result.lock, well: result.well};
     histos_data.push(new_histo_data);
@@ -109,7 +112,17 @@ function createComparer()
     var heatmapParent = d3.select("#comparer_root");
     var svg = d3.select("#comparer_svg");
     var legend_svg = d3.select("#comparer_legend_svg");
-    return ComparerHeatMap(heatmapParent, svg, legend_svg);
+    return ComparerHeatMap(heatmapParent, svg, legend_svg,
+        function(comparison)
+        {
+            // console.log("Show Tooltip!");
+            tooltip.showCompare(comparison);
+        },
+        function()
+        {
+            // console.log("Hide Tooltip!");
+            tooltip.hide();
+        });
 }
 
 function createHistogramSlot(origin)

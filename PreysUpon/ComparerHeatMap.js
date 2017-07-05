@@ -1,11 +1,11 @@
 var a = 36;
-var ComparerHeatMap = function (origin, svg, legend_svg)
+var ComparerHeatMap = function (origin, svg, legend_svg, diff_hover_callback, diff_out_callback)
 {
 	width = svg.attr("width");
 	height = svg.attr("height");
 
 	this.colorGroups = ["Blue", "White", "Green", "Black", "Red", "Multicolored", "Colorless"];
-	this.KillSurviveKeys = ["Kill", "Survive"];
+	this.KillSurviveKeys = ["Kill", "Survive", "Not Kill", "Not Survive"];
 
 	var result ={
 
@@ -40,7 +40,7 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 			.range([65, 95, 125, 155, 185, 215, 245]);
 		var y = d3.scaleOrdinal()
 				.domain(this.KillSurviveKeys)
-				.range([30, 60]);
+				.range([30, 60, 90, 120]);
 
 		var emptyColor = "black";
 		var scaleColor = d3.scaleLinear()
@@ -65,11 +65,21 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 					var val = 0;
 					if(d.total != 0)
 					{
-						var val = 10 * d.diff/d.total;
+						var val = d.diff;
+					} else
+					{
+						return "Black";
 					}
 					return scaleColor(val);
 				})
-				.exit();
+				.on("mouseover", function(d)
+					{
+						if(diff_hover_callback) diff_hover_callback(d);
+					})
+				.on("mouseout", function(d)
+					{
+						if(diff_out_callback) diff_out_callback(d);
+					});
 
 
 		};
@@ -115,10 +125,13 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 
 			var color = this.colorGroups[i];
 			var temp = {color:color};
-			temp["A"] = predA[color];
-			temp["B"] = predB[color];
-			temp["diff"] = predA[color].cardCount - predB[color].cardCount;
-			temp ["total"] = predA[color].cardCount + predB[color].cardCount;
+			temp.A = predA[color];
+			temp.B = predB[color];
+			temp.diff = predA[color].cardCount - predB[color].cardCount;
+
+			temp.greater = temp.diff > 0? temp.A : temp.B;
+			temp.lesser = temp.diff <= 0? temp.A : temp.B;
+			temp.total = predA[color].cardCount + predB[color].cardCount;
 			result.push(temp);
 		}
 		return result;
@@ -129,4 +142,4 @@ var ComparerHeatMap = function (origin, svg, legend_svg)
 	}
 
 	return result;
-}
+};
