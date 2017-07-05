@@ -70,6 +70,15 @@ var CardQuery = (function(Cards)
 		return result;
 	}
 
+	function getKillSurviveColorSplit(pow, tough)
+	{
+		var result = [];
+
+		result["Kill"] = getAllKill(pow).getColorGroupSplit();
+		result["Survive"] = getAllSurvive(tough).getColorGroupSplit();
+		return result;
+	}
+
 	function getColorPredationSplitTable(pow, tough)
 	{
 		var result = [];
@@ -197,6 +206,33 @@ var CardQuery = (function(Cards)
 		});
 		return CardQuery(filter);
 	}
+	function getAllKill(power) {
+		var filter = Cards.filter(function (card) {
+			return card.toughness <= power;
+		});
+		return CardQuery(filter);
+	}
+	function getAllNotKill(power) {
+		var filter = Cards.filter(function (card) {
+			return card.toughness > power;
+		});
+		return CardQuery(filter);
+	}
+
+	function getAllSurvive(toughness) {
+		var filter = Cards.filter(function (card) {
+			return card.power < toughness;
+		});
+		return CardQuery(filter);
+	}
+
+	function getAllDie(toughness) {
+		var filter = Cards.filter(function (card) {
+			return card.power >= toughness;
+		});
+		return CardQuery(filter);
+	}
+
 	return {
 		cards: Cards,
 		cardCount: size,
@@ -204,6 +240,10 @@ var CardQuery = (function(Cards)
 		getAllPrey: getAllPrey,
 		getAllBounceOff: getAllBounceOff,
 		getAllTrades: getAllTrades,
+		getAllKill: getAllKill,
+		getAllNotKill: getAllNotKill,
+		getAllDie: getAllDie,
+		getAllSurvive: getAllSurvive,
 		getAllInEdition: getAllInEdition,
 		getCardWithName: getCardWithName,
 		getColorGroupSplit: getColorGroupSplit,
@@ -213,7 +253,8 @@ var CardQuery = (function(Cards)
 		getPredationColorSplitTable: getPredationColorSplitTable,
 		getPredationSplit: getPredationSplit,
 		getAllInRarities: getAllInRarities,
-		getAllWithCostBetween: getAllWithCostBetween
+		getAllWithCostBetween: getAllWithCostBetween,
+		getKillSurviveColorSplit: getKillSurviveColorSplit
 	};
 });
 
