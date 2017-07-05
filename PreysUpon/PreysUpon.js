@@ -44,7 +44,8 @@ function addHisto()
     // var predation_filter = this.mainHistogram.predation_filter();
     var predation_filter = null;
 
-    var newHisto = makeHisto(histo_origin, histo_svg, result.title, rarity_filter, predation_filter);
+    var newHisto = makeHisto(histo_origin, histo_svg, result.title, rarity_filter, predation_filter,
+        function(){onHistoUpdate()});
 
     var new_histo_data = {histo: newHisto, lock: result.lock, well: result.well};
     histos_data.push(new_histo_data);
@@ -178,7 +179,13 @@ function toggleHisto(histo_data)
     }
 }
 
-
+function onHistoUpdate()
+{
+    if(histo_selections.length == 2)
+    {
+        updateComparer(histo_selections[0], histo_selections[1]);
+    }
+}
 
 function selectHisto(histo_data)
 {

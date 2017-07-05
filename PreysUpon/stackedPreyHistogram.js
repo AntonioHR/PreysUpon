@@ -1,6 +1,6 @@
 var check = checkBoxFilter;
 
-function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start){
+function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start, filter_update_function){
 	if(!svg)
 	{
 		svg = parent.append("svg")
@@ -54,6 +54,8 @@ function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start){
 			_rarity_filter = newFilters;
 			console.log(_rarity_filter);
 			render();
+			if(filter_update_function)
+				filter_update_function();
 		});
 	rarityCheckboxFilter.update(rarities, rarity_filter_start);
 
@@ -64,6 +66,8 @@ function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start){
 		 	_cost_filter[1] = isOnEdges[1]? 99 : range[1];
 			console.log(predation_filter())
 			render();
+			if(filter_update_function)
+				filter_update_function();
 		}, [0, 10], true, "ex1")
 
 	function translate(x, y)
