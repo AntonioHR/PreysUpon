@@ -1,5 +1,12 @@
-function makeHisto(svg){
+var check = checkBoxFilter;
 
+function makeHisto(parent, svg, title, rarity_filter_start, cost_filter_start, filter_update_function){
+	if(!svg)
+	{
+		svg = parent.append("svg")
+			.attr("width", 400)
+			.attr("height", 400);
+	}
 	var margin = {top: 20, right: 20, bottom: 30, left: 40},
 		width = +svg.attr("width") - margin.left - margin.right,
 		height = +svg.attr("height") - margin.top - margin.bottom,
@@ -7,7 +14,13 @@ function makeHisto(svg){
 		colorGroups = ["Blue", "White", "Green",
 			"Black", "Red", "Multicolored", "Colorless"],
 		predationGroups = ["Prey", "Trade", "BounceOff", "Predator"],
-		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare", "Special"];
+		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare"],
+		base_count = 40;
+
+	//Filters
+	var _rarity_filter = rarity_filter_start? rarity_filter_start: rarities,
+		_predation_filter =  [-99, -99],
+		_cost_filter = cost_filter_start? cost_filter_start:[0, 100];
 
 	var x = d3.scaleBand()
 		.rangeRound([0, width])
@@ -26,29 +39,113 @@ function makeHisto(svg){
 		.domain(rarities);
 
 
+
 	var tooltipDiv = d3.select("body").append("div")
 		.attr("class", "tooltip");
 
 	tooltipDiv.append("ul");
-		// .style("opacity", 0);
+
+
+	var checkboxDiv = parent.append("form");
+	// var rarities_filter = rarities;
+	var rarityCheckboxFilter = check(checkboxDiv,
+		function(newFilters)
+		{
+			_rarity_filter = newFilters;
+			console.log(_rarity_filter);
+			render();
+			if(filter_update_function)
+				filter_update_function();
+		});
+	rarityCheckboxFilter.update(rarities, rarity_filter_start);
+
+	var costFilterDiv = parent.append("div").attr("class", "col-sm-6 offset-2");
+	var costSliderFilter = CostFilter(costFilterDiv, function(range, isOnEdges)
+		{
+		 	_cost_filter[0] = isOnEdges[0]? -99 : range[0];
+		 	_cost_filter[1] = isOnEdges[1]? 99 : range[1];
+			console.log(predation_filter())
+			render();
+			if(filter_update_function)
+				filter_update_function();
+		}, [0, 10], true, "ex1")
 
 	function translate(x, y)
 	{
 		return "translate("+x+","+y+")";
 	}
-	var update = function data(newData)
+
+	var data = function(value)
 	{
+		if(!value)
+			return _full_data.slice();
+		else
+		{
+			_full_data = value;
+		}
+		return this;
+	};
+
+	var rarity_filter = function(value)
+	{
+		if(!value)
+		{
+			return _rarity_filter.slice();
+		} else
+		{
+			_rarity_filter = value;
+		}
+		return this;
+	};
+
+	var predation_filter = function(value)
+	{
+		if(!value)
+		{
+			return _predation_filter.slice();
+		} else
+		{
+			_predation_filter = value;
+		}
+		return this;
+	};
+
+	var currentQuery = function()
+	{
+		var filtered_data = _full_data;
+
+		filtered_data = filtered_data.getAllInRarities(_rarity_filter);
+		filtered_data = filtered_data.getAllWithCostBetween(_cost_filter);
+
+		return {
+			data:filtered_data,
+			pow:_predation_filter[0],
+			tough:_predation_filter[1]
+		};
+	};
+
+	var render = function ()
+	{
+
+		var filtered_data = _full_data;
+
+		filtered_data = filtered_data.getAllInRarities(_rarity_filter);
+		filtered_data = filtered_data.getAllWithCostBetween(_cost_filter);
+
+		var formatted_data = filtered_data.getColorPredationSplitTable(_predation_filter[0], _predation_filter[1]);
 
 		var t = d3.transition()
 			.duration(750);
 
-		y.domain([0, d3.max(newData, function(d){return d.cardCount;})]).nice();
+		var maxCardCount = d3.max(formatted_data, function(d){return d.cardCount;});
+		var yMax = (maxCardCount > base_count)? maxCardCount:base_count;
+		y.domain([0, yMax]).nice();
 		var dataStacks = d3.stack()
 		.keys(predationGroups)
 		.value(function(d, key)
 			{
 				return d[key].cardCount;
-			})(newData);
+			})(formatted_data);
 
 		for(var i in dataStacks)
 		{
@@ -58,15 +155,20 @@ function makeHisto(svg){
 			}
 		}
 
-		d3.selectAll("#legendParent").remove();
-		d3.selectAll("#axesParent").remove();
+		parent.selectAll(".legendParent").remove();
+		parent.selectAll(".axesParent").remove();
+
+		if(title)
+		{
+			title.text("Power: " + _predation_filter[0] + " Toughness: " + _predation_filter[1]);
+		}
 
 		var elements =  g.selectAll(".bar").data(dataStacks);
 		elements.exit().remove();
 		var newElements = elements.enter().append("g")
 			.attr("class", "bar");
 		elements = newElements.merge(elements)
-			.attr("fill", function(d){return z(d.key);})
+			.attr("fill", function(d){return z(d.key);});
 
 
 		var subElements = elements.selectAll("rect")
@@ -88,7 +190,7 @@ function makeHisto(svg){
 			.attr("y", function(d){return y(d[1]);})
 			.attr("height", function(d){return y(d[0]) - y(d[1]);});
 
-		var axesParent = g.append("g").attr("id", "axesParent");
+		var axesParent = g.append("g").attr("class", "axesParent");
 		axesParent.append("g")
 			.attr("class", "axis")
 			.attr("transform", translate(0, height))
@@ -106,7 +208,7 @@ function makeHisto(svg){
 				.attr("text-anchor", "start")
 				.text("Card Count");
 
-		var legendParent = g.append("g").attr("id", "axesParent");
+		var legendParent = g.append("g").attr("class", "legendParent");
 		var legend = legendParent.append("g")
 				.attr("font-family", "sans-serif")
 				.attr("font-size", 10)
@@ -160,6 +262,11 @@ function makeHisto(svg){
 			.style("opacity", 0);
 	}
 	return {
-		update:update
+		render:render,
+		predation_filter: predation_filter,
+		data: data,
+		rarity_filter: rarity_filter,
+		parent: parent,
+		query: currentQuery
 	};
 }

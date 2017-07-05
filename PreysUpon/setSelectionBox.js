@@ -30,11 +30,12 @@ function mtgSetsSelector(selector, listOrigin, allSets, updateCallback)
 		elements.exit().remove();
 		elements.selectAll("button").remove();
 		var p = elements.enter();
-		var newEls = p.append("li");
+		var newEls = p.append("li")
+			.attr("class", "list-group-item");
 		var total =newEls.merge(elements)
 				.text(function(d){return d.name + "("+d.cards.length +")";});
 		total.append("button")
-				.text("x")
+				.attr("class", "close glyphicon glyphicon-remove float-right")
 				.on("click", function(d)
 					{
 						selections.splice(selections.indexOf(d), 1);

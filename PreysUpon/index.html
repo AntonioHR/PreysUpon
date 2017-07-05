@@ -1,50 +1,124 @@
 <!DOCTYPE html>
 
 <html>
+<head>
+	<title>PreysUpon</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://d3js.org/d3.v4.min.js"></script>	
+	<script type="text/javascript" src="AllSets.json"></script>
+	<script type="text/javascript" src="CardQuery.js"></script>
+	<script type="text/javascript" src="setSelectionBox.js"></script>
+	<script type="text/javascript" src="PowerToughnessSelector.js"></script>
+	<script type="text/javascript" src="checkBoxFilter.js"></script>
+	<script type="text/javascript" src="CostFilter.js"></script>
+	<script type="text/javascript" src="stackedPreyHistogram.js"></script>
+	<!--<script type="text/javascript" src="ComparativeHistograms.js"></script>-->
+	<script type="text/javascript" src="ComparerHeatMap.js"></script>
+	<script type="text/javascript" src="PreysUpon.js"></script>
 
-	<head>
-		<title>PreysUpon</title>
-		<script src="https://d3js.org/d3.v4.min.js"></script>	
-		<script type="text/javascript" src="AllSets.json"></script>
-		<script type="text/javascript" src="CardQuery.js"></script>
-		<script type="text/javascript" src="setSelectionBox.js"></script>
-		<script type="text/javascript" src="stackedPreyHistogram.js"></script>
-		<script type="text/javascript" src="PowerToughnessSelector.js"></script>
-		<script type="text/javascript" src="PreysUpon.js"></script>
 
-		<style type="text/css">		
-			#top div
-			{
-				display: inline-block;
-			}
-			.one {
-	            width: 350px;
-	            float: left;
-	        }
-	        .two {
-	            margin-left: 350px;
-	        }
-	        body {font-family: monospace; line-height: 160%; font-size: 18px; }
-	        ul {list-style: none; margin: 0; padding: 0;}
-	        input {border: 1px dotted #ccc; background: white; font-family: monospace; padding: 10px 20px; font-size: 18px; margin: 20px 10px 20px 0; color: red;}
-	        input:focus { background-color:yellow; outline: none;}
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./libs/bootstrap-slider.js"></script>
+    <link href="./PreysUpon.css" rel="stylesheet">
+    <link href="./libs/bootstrap-slider.css" rel="stylesheet">
+</head>
 
-			div.tooltip {
-			    position: absolute;
-			    text-align: center;
-			    padding: 2px;
-			    font: 12px sans-serif;
-			    background: #212121;
-			    border: 0px;
-			    border-radius: 8px;
-			    pointer-events: none;
-			}
-		</style>
+<body onload="init()">
+	<div class="jumbotron text-center">
+		<h1>Preys Upon</h1>
+		<p>A Magic: The Gathering limited play creature evaluator</p> 
+	</div>
 
-	</head>
+	<div class="container-fluid">
 
-	<body onload="init()">
-		<div id="top">
+		<!-- Sidebar-->
+		<div class="row">
+			<div class="col-md-3 ">
+				<!-- Seleção de Coleção-->
+				<div class="form-group well">
+					<h3>Coleção</h3>
+	                <select class="form-control" id="selectSet"> 
+	                	<option></option>
+	                </select>
+	                <ul class="list-group" id="sets-list">
+	                	<li class="list-group-item">
+	                		Innistrad
+	                		<button class="close glyphicon glyphicon-remove float-right"></button>
+	                	</li>
+	                	<li class="list-group-item">
+	                		Dark Ascension
+	                		<button class="close glyphicon glyphicon-remove float-right"></button>
+	                	</li>
+	                </ul>
+	                <div>
+						<h3>Preview</h3>
+						<div class="row">
+            				<!-- <button class="close glyphicon glyphicon-remove float-right"></button> -->
+
+    						<svg id="histogram_svg" width="250" height="250"></svg>
+	      				</div>
+					</div>
+            	</div>
+			</div>
+
+
+			<!-- Meio -->
+			<div class="col-md-9"> 
+				<!-- Formulario de filtro de criatura -->
+				<div class="row">
+					<div class="col-sm-8 well"> 
+						<form class="form-inline">
+							<div class="form-group">
+								<label for="selectCreature" >Creature</label>
+								<select id="selectCreature" class="form-control"> 
+									<option>Avacyn, Angel of Hope</option>
+									<option>Griselbrand</option>
+								</select>
+						 	</div>
+						 	<div class="form-group">
+								<label for="power_field" >Power</label>
+								<select id="power_field" class="form-control"> 
+									<option>0</option>
+									<option>1</option>
+									<option>2</option>
+								</select>
+						 	</div>
+						 	<div class="form-group">
+								<label for="toughness_field" >Toughness</label>
+								<select id="toughness_field" class="form-control"> 
+									<option>0</option>
+									<option>1</option>
+									<option>2</option>
+								</select>
+						 	</div>
+					 		<button class="btn btn-success" id="button-creature-add" type="button">Add</button>
+						 </form>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-8"> 
+						<div class="row" id="histograms-origin">
+						</div>
+					</div>
+					<!-- Comparer -->
+					<div class="col-sm-4 well" id="comparer_root"> 
+						<!-- <div class="well" id="comparer_root"> -->
+							<svg id="comparer_svg" width="300" height="200"></svg>
+							<svg id="comparer_legend_svg" width="300" height="50"></svg>
+						<!-- </div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+		<!-- <div id="top">
 		  	<div>
 				<label for="selectCreature" >Creature</label>
 				<select id="selectCreature"> </select>
@@ -66,7 +140,7 @@
             <div class="two">
                 <svg id="histogram_svg" width="500" height="500"></svg>
             </div>
-        </div>
-	</body>
+        </div> -->
+</body>
 
 </html>

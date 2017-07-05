@@ -44,6 +44,7 @@ var CardQuery = (function(Cards)
 		return result;
 	}
 
+
 	function getColorPredationSplit(pow, tough)
 	{
 		var result =
@@ -58,6 +59,16 @@ var CardQuery = (function(Cards)
 		return result;
 	}
 
+	function getPredationColorSplit(pow, tough)
+	{
+		var result = [];
+
+		result["Prey"] = getAllPrey(pow, tough).getColorGroupSplit();
+		result["BounceOff"] = getAllBounceOff(pow, tough).getColorGroupSplit();
+		result["Trade"] = getAllTrades(pow, tough).getColorGroupSplit();
+		result["Predator"] = getAllPredators(pow, tough).getColorGroupSplit();
+		return result;
+	}
 
 	function getColorPredationSplitTable(pow, tough)
 	{
@@ -101,7 +112,6 @@ var CardQuery = (function(Cards)
 		return result;
 	}
 
-
 	function getPredationSplit(pow, tough)
 	{
 		var result =
@@ -111,6 +121,7 @@ var CardQuery = (function(Cards)
 				Trade:getAllTrades(pow, tough),
 				Predator:getAllPredators(pow, tough),
 				cardCount:size
+				// AllSets = function(){return [Prey, BounceOff, Trade, Predator]}
 			};
 		return result;
 	}
@@ -138,6 +149,24 @@ var CardQuery = (function(Cards)
 		});
 		return CardQuery(filter);
 	}
+
+	function getAllInRarities(rarities)
+	{
+		var filter = Cards.filter(function (card) {
+			return rarities.includes(card.rarity);
+		});
+		return CardQuery(filter);
+	}
+
+
+	function getAllWithCostBetween(costRange)
+	{
+		var filter = Cards.filter(function (card) {
+			return card.cmc >= costRange[0] && card.cmc <= costRange[1];
+		});
+		return CardQuery(filter);
+	}
+
 
 	//When combat results in no deaths
 	function getAllBounceOff(power, toughness) {
@@ -179,9 +208,12 @@ var CardQuery = (function(Cards)
 		getCardWithName: getCardWithName,
 		getColorGroupSplit: getColorGroupSplit,
 		getColorPredationSplit: getColorPredationSplit,
+		getPredationColorSplit: getPredationColorSplit,
 		getColorPredationSplitTable: getColorPredationSplitTable,
 		getPredationColorSplitTable: getPredationColorSplitTable,
-		getPredationSplit: getPredationSplit
+		getPredationSplit: getPredationSplit,
+		getAllInRarities: getAllInRarities,
+		getAllWithCostBetween: getAllWithCostBetween
 	};
 });
 
