@@ -144,12 +144,12 @@ function makeScatterplot(svg) {
 		d3.select("#histogram_svg").transition(t)
 			.style("display", "none");
 		d3.selectAll(".card_image").remove();
-		d3.select("#scatterplot_svg").transition(t)
-			.attr("class", "animated slideInLeft")
-			.style("opacity", "100");
 		d3.select("#selected_cards").transition(t)
 			.style("opacity", "0")
 			.attr("class", "animated slideOutRight");
+		d3.select("#scatterplot_svg").transition(t)
+			.attr("class", "animated slideInLeft")
+			.style("opacity", "100");
 	}
 
 	return {
