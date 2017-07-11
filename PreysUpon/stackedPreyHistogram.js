@@ -1,6 +1,6 @@
 var check = checkBoxFilter;
 
-function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_click_function, title, rarity_filter_start, cost_filter_start, filter_update_function){
+function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_click_function, title){
 	if(!svg)
 	{
 		svg = parent.append("svg")
@@ -18,9 +18,7 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_cl
 		base_count = 40;
 
 	//Filters
-	var _rarity_filter = rarity_filter_start? rarity_filter_start: rarities,
-		_predation_filter =  [-99, -99],
-		_cost_filter = cost_filter_start? cost_filter_start:[0, 100];
+	var _predation_filter =  [-99, -99];
 
 	var x = d3.scaleBand()
 		.rangeRound([0, width])
@@ -46,29 +44,7 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_cl
 	tooltipDiv.append("ul");
 
 
-	var checkboxDiv = parent.append("form");
-	// var rarities_filter = rarities;
-	var rarityCheckboxFilter = check(checkboxDiv,
-		function(newFilters)
-		{
-			_rarity_filter = newFilters;
-			console.log(_rarity_filter);
-			render();
-			if(filter_update_function)
-				filter_update_function();
-		});
-	rarityCheckboxFilter.update(rarities, rarity_filter_start);
-
-	var costFilterDiv = parent.append("div").attr("class", "col-sm-6 offset-2");
-	var costSliderFilter = CostFilter(costFilterDiv, function(range, isOnEdges)
-		{
-		 	_cost_filter[0] = isOnEdges[0]? -99 : range[0];
-		 	_cost_filter[1] = isOnEdges[1]? 99 : range[1];
-			console.log(predation_filter())
-			render();
-			if(filter_update_function)
-				filter_update_function();
-		}, [0, 10], true, "ex1")
+	
 
 	function translate(x, y)
 	{
@@ -86,18 +62,6 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_cl
 		return this;
 	};
 
-	var rarity_filter = function(value)
-	{
-		if(!value)
-		{
-			return _rarity_filter.slice();
-		} else
-		{
-			_rarity_filter = value;
-		}
-		return this;
-	};
-
 	var predation_filter = function(value)
 	{
 		if(!value)
@@ -109,13 +73,14 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_cl
 		}
 		return this;
 	};
+	
 
 	var currentQuery = function()
 	{
 		var filtered_data = _full_data;
 
-		filtered_data = filtered_data.getAllInRarities(_rarity_filter);
-		filtered_data = filtered_data.getAllWithCostBetween(_cost_filter);
+		// filtered_data = filtered_data.getAllInRarities(_rarity_filter);
+		// filtered_data = filtered_data.getAllWithCostBetween(_cost_filter);
 
 		return {
 			data:filtered_data,
@@ -129,8 +94,8 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_cl
 
 		var filtered_data = _full_data;
 
-		filtered_data = filtered_data.getAllInRarities(_rarity_filter);
-		filtered_data = filtered_data.getAllWithCostBetween(_cost_filter);
+		// filtered_data = filtered_data.getAllInRarities(_rarity_filter);
+		// filtered_data = filtered_data.getAllWithCostBetween(_cost_filter);
 
 		var formatted_data = filtered_data.getColorPredationSplitTable(_predation_filter[0], _predation_filter[1]);
 
@@ -236,7 +201,7 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_cl
 		render:render,
 		predation_filter: predation_filter,
 		data: data,
-		rarity_filter: rarity_filter,
+		// rarity_filter: rarity_filter,
 		parent: parent,
 		query: currentQuery
 	};

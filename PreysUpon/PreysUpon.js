@@ -34,6 +34,7 @@ var init = function () {
 
     comparer = createComparer();
     heatmap = createHeatmap();
+    costRarityFilter = createCostRarityFilter();
 };
 
 function addHisto()
@@ -44,11 +45,12 @@ function addHisto()
     var histo_origin = d3.select(histo_svg.node().parentElement);
 
 
-    var rarity_filter = this.mainHistogram.rarity_filter();
+    // var rarity_filter = this.mainHistogram.rarity_filter();
+
     // var predation_filter = this.mainHistogram.predation_filter();
     var predation_filter = null;
 
-    var newHisto = makeHisto(histo_origin, histo_svg, tooltip.show, tooltip.hide, showCards, result.title, rarity_filter, predation_filter,
+    var newHisto = makeHisto(histo_origin, histo_svg, tooltip.show, tooltip.hide, showCards, result.title,
         function(){onHistoUpdate();});
 
     var new_histo_data = {histo: newHisto, lock: result.lock, well: result.well};
@@ -124,6 +126,11 @@ function createComparer()
             // console.log("Hide Tooltip!");
             tooltip.hide();
         }, showComparisonCards);
+}
+function createCostRarityFilter()
+{
+    var parent = d3.select("#filters_root");
+    return CostRarityFilter(parent, OnFiltersChange);
 }
 
 function createHeatmap ()
@@ -241,17 +248,23 @@ function deselectHisto(histo_data)
 
 function updateSelectedSets()
 {
-    this.data = CardQuery(this.setSelector.getSelectedCards());
+    this.set_data = CardQuery(this.setSelector.getSelectedCards());
 }
 function updatePredationFilter()
 {
     this.predation_filter = [this.powerTough.getPower(), this.powerTough.getToughness()];
 }
-
-function redraw(histo)
+function updateFilteredData()
 {
-    histo.data(this.data);
-    histo.predation_filter(this.predation_filter);
+    this.filtered_data = costRarityFilter.applyTo(this.set_data);
+}
+
+function redraw(histo, keepPredation)
+{
+    histo.data(this.filtered_data);
+    if(!keepPredation){
+        histo.predation_filter(this.predation_filter);
+    }
     histo.render();
 }
 
@@ -259,9 +272,20 @@ function OnSetsChange()
 {
     updateSelectedSets();
     updatePredationFilter();
-    this.powerTough.update(this.data.cards);
+    OnFiltersChange();
+}
+
+function OnFiltersChange()
+{
+    updateFilteredData();
+    this.powerTough.update(this.filtered_data.cards);
     redraw(mainHistogram);
-    heatmap.update(this.data, function(d){
+    for (var i = histos_data.length - 1; i >= 0; i--) {
+        redraw(histos_data[i].histo, true);
+    }
+    if(histo_selections.length == 2)
+        updateComparer(histo_selections[0], histo_selections[1]);
+    heatmap.update(this.filtered_data, function(d){
         d3.select("#power_field").property("value", d.power).on("change")();
         d3.select("#toughness_field").property("value", d.toughness).on("change")();
     });

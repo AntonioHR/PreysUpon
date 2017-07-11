@@ -9,20 +9,21 @@ function CostFilter(origin, updateCallback, range, id)
 		// 	</div>
 		this.selections = range;
 
-		var div = origin.append("div").attr("claa", "row");
+		var div = origin.append("div").attr("class", "row");
 		div.append("b").text(range[0]).attr("class", "col-sm-2");
-		var divChild = div.append("div");
+		var divChild = div.append("div").attr("class", "col-sm-6");
+		var divChildChild = divChild.append("div");
 
 
-		var sliderJQuery = $(divChild.node()).slider({ id: "slider12a", min: range[0], max: range[1], value: range });
+		var sliderJQuery = $(divChildChild.node()).slider({ id: "slider12a", min: range[0], max: range[1], value: range });
 		sliderJQuery.on("change", function(val)
 		{
 			Update(val.value.newValue)
 		});
-		divChild.remove();
+		divChildChild.remove();
 
 		var slider = d3.select(sliderJQuery.get(0)).attr("class", "col-sm-6");
-		div.append("b").text(range[1]+"+").attr("class", "col-sm-2");
+		div.append("b").text(range[1]+"+").attr("class", "col-sm-offset-2 col-sm-2");
 	}
 	function Update(filterRange)
 	{
