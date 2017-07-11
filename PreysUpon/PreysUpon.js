@@ -211,13 +211,26 @@ function toggleHisto(histo_data)
 
 function showCards(cardQuery)
 {
-    console.log(cardQuery.cards);
+    //console.log(cardQuery.cards);
+
+    var imageUrl = function (d) {
+        return "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid="+d.multiverseid+"&type=card";
+    }
+
+    var cards_images = d3.select("#cards_images");
+    cards_images.selectAll(".card_image").remove();
+    cards_images.selectAll(".card_image").data(cardQuery.cards)
+            .enter().append("img")
+                .attr("class", "card_image")
+                .attr("src", imageUrl)
+                .style("margin-right", "5px");
 }
 
 function showComparisonCards(cardComparison)
 {
     console.log(cardComparison.A.cards);
     console.log(cardComparison.B.cards);
+    showCards({cards: cardComparison.A.cards.concat(cardComparison.B.cards)});
 }
 
 function onHistoUpdate()
@@ -285,8 +298,24 @@ function OnFiltersChange()
     }
     if(histo_selections.length == 2)
         updateComparer(histo_selections[0], histo_selections[1]);
-    heatmap.update(this.filtered_data, function(d){
-        d3.select("#power_field").property("value", d.power).on("change")();
-        d3.select("#toughness_field").property("value", d.toughness).on("change")();
-    });
+        heatmap.update(this.filtered_data, function(d){
+            d3.select("#power_field").property("value", d.power).on("change")();
+            d3.select("#toughness_field").property("value", d.toughness).on("change")();
+
+            /*var showableCards = this.filtered_data.cards.filter(function(card){
+                return (card.power == d.power && card.toughness == d.toughness);
+            });
+
+            var imageUrl = function (d) {
+                return "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid="+d.multiverseid+"&type=card";
+            }
+
+            var cards_images = d3.select("#cards_images");
+            cards_images.selectAll(".card_image").remove();
+            cards_images.selectAll(".card_image").data(showableCards)
+                    .enter().append("img")
+                        .attr("class", "card_image")
+                        .attr("src", imageUrl)
+                        .style("margin-right", "5px");*/
+                });
 }
