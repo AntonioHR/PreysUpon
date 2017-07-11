@@ -1,5 +1,5 @@
 var a = 36;
-var ComparerHeatMap = function (origin, svg, legend_svg, diff_hover_callback, diff_out_callback)
+var ComparerHeatMap = function (origin, svg, legend_svg, diff_hover_callback, diff_out_callback, spot_click_callback)
 {
 	width = svg.attr("width");
 	height = svg.attr("height");
@@ -79,8 +79,11 @@ var ComparerHeatMap = function (origin, svg, legend_svg, diff_hover_callback, di
 				.on("mouseout", function(d)
 					{
 						if(diff_out_callback) diff_out_callback(d);
+					})
+				.on("click", function(d)
+					{
+						if(spot_click_callback) spot_click_callback(d);
 					});
-
 
 		};
 

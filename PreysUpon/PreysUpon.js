@@ -10,7 +10,7 @@ var init = function () {
 
     var mainHistoSVG = d3.select("#histogram_svg");
     var mainHistoOrigin = d3.select(mainHistoSVG.node().parentElement);
-    this.mainHistogram = makeHisto(mainHistoOrigin, mainHistoSVG, tooltip.show, tooltip.hide);
+    this.mainHistogram = makeHisto(mainHistoOrigin, mainHistoSVG, tooltip.show, tooltip.hide, showCards);
 
     histos_origin = d3.select("#histograms-origin");
     histos_data = [];
@@ -48,7 +48,7 @@ function addHisto()
     // var predation_filter = this.mainHistogram.predation_filter();
     var predation_filter = null;
 
-    var newHisto = makeHisto(histo_origin, histo_svg, tooltip.show, tooltip.hide, result.title, rarity_filter, predation_filter,
+    var newHisto = makeHisto(histo_origin, histo_svg, tooltip.show, tooltip.hide, showCards, result.title, rarity_filter, predation_filter,
         function(){onHistoUpdate();});
 
     var new_histo_data = {histo: newHisto, lock: result.lock, well: result.well};
@@ -123,7 +123,7 @@ function createComparer()
         {
             // console.log("Hide Tooltip!");
             tooltip.hide();
-        });
+        }, showComparisonCards);
 }
 
 function createHeatmap ()
@@ -200,6 +200,17 @@ function toggleHisto(histo_data)
     } else {
         comparer.clear();
     }
+}
+
+function showCards(cardQuery)
+{
+    console.log(cardQuery.cards);
+}
+
+function showComparisonCards(cardComparison)
+{
+    console.log(cardComparison.A.cards);
+    console.log(cardComparison.B.cards);
 }
 
 function onHistoUpdate()

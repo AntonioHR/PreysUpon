@@ -1,6 +1,6 @@
 var check = checkBoxFilter;
 
-function makeHisto(parent, svg, mouse_over_function, mouse_out_function, title, rarity_filter_start, cost_filter_start, filter_update_function){
+function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_click_function, title, rarity_filter_start, cost_filter_start, filter_update_function){
 	if(!svg)
 	{
 		svg = parent.append("svg")
@@ -181,7 +181,8 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, title, 
 			.attr("y", height)
 			.attr("height", 0)
 			.on("mouseover", function(d){mouse_over_function(d.data[d.key]);})
-			.on("mouseout", function(d){mouse_out_function(d.data[d.key]);});
+			.on("mouseout", function(d){mouse_out_function(d.data[d.key]);})
+			.on("click", function(d) { area_click_function(d.data[d.key]); } );
 
 		subNewElements.merge(subElements)
 			.attr("x", function(d){return x(d.data.key);})
