@@ -15,7 +15,7 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_cl
 			"Black", "Red", "Multicolored", "Colorless"],
 		predationGroups = ["Prey", "Trade", "BounceOff", "Predator"],
 		rarities = ["Common", "Uncommon", "Rare", "Mythic Rare"],
-		base_count = 40;
+		base_count = 10;
 
 	//Filters
 	var _predation_filter =  [-99, -99];
@@ -102,7 +102,7 @@ function makeHisto(parent, svg, mouse_over_function, mouse_out_function, area_cl
 		var t = d3.transition()
 			.duration(750);
 
-		var maxCardCount = d3.max(formatted_data, function(d){return d.cardCount;});
+		var maxCardCount = d3.max(formatted_data, function(d){return d.cardCount;}) + 3;
 		var yMax = (maxCardCount > base_count)? maxCardCount:base_count;
 		y.domain([0, yMax]).nice();
 		var dataStacks = d3.stack()
