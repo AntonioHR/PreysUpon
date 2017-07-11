@@ -54,8 +54,9 @@ var ComparerHeatMap = function (origin, svg, legend_svg, diff_hover_callback, di
 
 			var predationQuery = joinedQuery[this.KillSurviveKeys[i]];
 
-			columns.data(predationQuery)
-				.enter().append("rect")
+			var cols = columns.data(predationQuery)
+				.enter();
+			var rects = cols.append("rect")
 				.attr("class", "cell")
 				.attr("x", function(d) { return x(d.color); })
 				.attr("width", 20)
@@ -72,6 +73,27 @@ var ComparerHeatMap = function (origin, svg, legend_svg, diff_hover_callback, di
 					}
 					return scaleColor(val);
 				})
+				.on("mouseover", function(d)
+					{
+						if(diff_hover_callback) diff_hover_callback(d);
+					})
+				.on("mouseout", function(d)
+					{
+						if(diff_out_callback) diff_out_callback(d);
+					})
+				.on("click", function(d)
+					{
+						if(spot_click_callback) spot_click_callback(d);
+					});
+
+				cols.append("text")
+					.attr("x", function(d) { return x(d.color); })
+					.attr("class", "heatmap_label")
+					.attr("fill", "white")
+					.attr("dy", "1em")
+					.attr("text-anchor", "middle")
+					.attr("dx", "0.7em")
+					.text(function(d){return d.total;})
 				.on("mouseover", function(d)
 					{
 						if(diff_hover_callback) diff_hover_callback(d);
@@ -134,7 +156,7 @@ var ComparerHeatMap = function (origin, svg, legend_svg, diff_hover_callback, di
 
 			temp.greater = temp.diff > 0? temp.A : temp.B;
 			temp.lesser = temp.diff <= 0? temp.A : temp.B;
-			temp.total = predA[color].cardCount + predB[color].cardCount;
+			temp.total = temp.A.cardCount + temp.B.cardCount - temp.A.getIntersect(temp.B).cardCount;
 			result.push(temp);
 		}
 		return result;
