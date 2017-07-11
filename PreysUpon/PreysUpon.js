@@ -33,6 +33,7 @@ var init = function () {
 
 
     comparer = createComparer();
+    heatmap = createHeatmap();
 };
 
 function addHisto()
@@ -123,6 +124,14 @@ function createComparer()
             // console.log("Hide Tooltip!");
             tooltip.hide();
         });
+}
+
+function createHeatmap ()
+{
+    var heatmapParent = d3.select("#heatmap_root");
+    var svg = d3.select("#heatmap_svg");
+    var legend_svg = d3.select("#heatmap_legend_svg");
+    return Heatmap(heatmapParent, svg, legend_svg);
 }
 
 function createHistogramSlot(origin)
@@ -241,4 +250,8 @@ function OnSetsChange()
     updatePredationFilter();
     this.powerTough.update(this.data.cards);
     redraw(mainHistogram);
+    heatmap.update(this.data, function(d){
+        d3.select("#power_field").property("value", d.power).on("change")();
+        d3.select("#toughness_field").property("value", d.toughness).on("change")();
+    });
 }

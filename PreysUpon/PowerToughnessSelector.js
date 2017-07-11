@@ -5,10 +5,12 @@ function powerToughnessSelector(selector, powerField, toughnessField, updateCall
 
 	powerField.selectAll("option").data(values).enter()
 		.append("option")
-		.text(function(d){return d;});
+		.text(function(d){return d;})
+		.attr("value", function(d){return d;});
 	toughnessField.selectAll("option").data(values).enter()
 		.append("option")
-		.text(function(d){return d;});
+		.text(function(d){return d;})
+		.attr("value", function(d){return d;});
 
 	selector.on("change", onChangeCeature);
 	powerField.on("change", onChangePower);

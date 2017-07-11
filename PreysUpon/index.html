@@ -5,6 +5,7 @@
 	<title>PreysUpon</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 	<script src="https://d3js.org/d3.v4.min.js"></script>	
 	<script type="text/javascript" src="AllSets.json"></script>
 	<script type="text/javascript" src="CardQuery.js"></script>
@@ -16,6 +17,7 @@
 	<script type="text/javascript" src="stackedPreyHistogram.js"></script>
 	<!--<script type="text/javascript" src="ComparativeHistograms.js"></script>-->
 	<script type="text/javascript" src="ComparerHeatMap.js"></script>
+	<script type="text/javascript" src="Heatmap.js"></script>
 	<script type="text/javascript" src="PreysUpon.js"></script>
 
 
@@ -81,17 +83,17 @@
 						 	<div class="form-group">
 								<label for="power_field" >Power</label>
 								<select id="power_field" class="form-control"> 
-									<option>0</option>
-									<option>1</option>
-									<option>2</option>
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
 								</select>
 						 	</div>
 						 	<div class="form-group">
 								<label for="toughness_field" >Toughness</label>
 								<select id="toughness_field" class="form-control"> 
-									<option>0</option>
-									<option>1</option>
-									<option>2</option>
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
 								</select>
 						 	</div>
 					 		<button class="btn btn-success" id="button-creature-add" type="button">Add</button>
@@ -110,8 +112,8 @@
 
 			<div class="col-md-3"> 
 				<!-- Spot for Scatterplot -->
-				<div class="well" id="scatterplot_root"> 
-					<svg width="300" height="200"></svg>
+				<div class="well" id="heatmap_root"> 
+					<svg id="heatmap_svg" width="300" height="300"></svg>
 				</div>
 				<!-- Comparer -->
 				<div class="well" id="comparer_root"> 
