@@ -19,3 +19,4 @@
 # Apresentações dos trabalhos:
 
 * [Slide 1](https://docs.google.com/presentation/d/1ACfgtsNTGGxi0Z9UDIBLR_borld4uOwsBg-xMeepiqs/edit?usp=sharing)
+* [Slide 2](https://docs.google.com/presentation/d/1xFiEK7_AcPbp1DlPMZrPgst4k8SEiZgBtZh0eQb94MY/edit?usp=sharing)
