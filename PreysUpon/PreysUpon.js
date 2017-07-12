@@ -218,8 +218,9 @@ function showCards(cardQuery)
     }
 
     var cards_images = d3.select("#cards_images");
-    cards_images.selectAll(".card_image").remove();
-    cards_images.selectAll(".card_image").data(cardQuery.cards)
+    d3.selectAll(".cards_container").remove();
+    cards_container = cards_images.append("div").attr("class", "cards_container well");
+    cards_container.selectAll(".card_image").data(cardQuery.cards)
             .enter().append("img")
                 .attr("class", "card_image")
                 .attr("src", imageUrl)
@@ -230,7 +231,26 @@ function showComparisonCards(cardComparison)
 {
     console.log(cardComparison.A.cards);
     console.log(cardComparison.B.cards);
-    showCards({cards: cardComparison.A.cards.concat(cardComparison.B.cards)});
+    //showCards({cards: cardComparison.A.cards.concat(cardComparison.B.getMinus(cardComparison.A))});
+
+    var imageUrl = function (d) {
+        return "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid="+d.multiverseid+"&type=card";
+    }
+
+    var cards_images = d3.select("#cards_images");
+    d3.selectAll(".cards_container").remove();
+    cards_container_A = cards_images.append("div").attr("class", "cards_container well col-md-6");
+    cards_container_A.selectAll(".card_image").data(cardComparison.A.cards)
+            .enter().append("img")
+                .attr("class", "card_image")
+                .attr("src", imageUrl)
+                .style("margin-right", "5px");
+    cards_container_B = cards_images.append("div").attr("class", "cards_container well col-md-6");
+    cards_container_B.selectAll(".card_image").data(cardComparison.B.cards)
+            .enter().append("img")
+                .attr("class", "card_image")
+                .attr("src", imageUrl)
+                .style("margin-right", "5px");
 }
 
 function onHistoUpdate()
