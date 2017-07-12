@@ -10,16 +10,15 @@ var makeTooltip = function ()
 	var compare_colors = ["#4287ff", "gray", "#ea00ff"];
 
 	function show(set)
-	{
-		fadeIn();
+	{		
 		showData(set.cards);
+		fadeIn(set.cards.length);
 	}
 	var tooltipDiv = d3.select("body").append("div")
 		.attr("class", "tooltip");
 
 	function showCompare(comparison)
-	{
-		fadeIn();
+	{	
 		// var data = comparison.greater.getMinus(comparison.lesser).cards;
 		// showData(data);
 		var split_data =  [comparison.A.getMinus(comparison.B).cards,
@@ -29,7 +28,6 @@ var makeTooltip = function ()
 	}
 
 	function showSplitData(split_data) {
-		fadeIn();
 
 		var lists = tooltipDiv.selectAll("ul").data(split_data);
 
@@ -44,6 +42,15 @@ var makeTooltip = function ()
 		{
 			showData(d, function(){return compare_colors[i];}, d3.select(this));
 		});
+
+		var originalLength = 0;
+
+		for (var i = 0; i < split_data.length; i++) 
+		{
+			originalLength += split_data[i].length;
+		}
+
+		fadeIn(originalLength);
 
 	}
 
@@ -76,13 +83,13 @@ var makeTooltip = function ()
 
 	var color_by_rarity = function(d){return colorsRarity(d.rarity);};
 
-	function fadeIn()
+	function fadeIn(length)
 	{
 		tooltipDiv.transition()
 			.duration(200)
 			.style("opacity", 1)
 			.style("left", (d3.event.pageX) + "px")
-			.style("top", (d3.event.pageY - 28) + "px");
+			.style("top", (d3.event.pageY - 12.5 * length) + "px");
 	}
 
 	function hide() {
